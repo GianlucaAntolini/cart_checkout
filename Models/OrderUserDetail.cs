@@ -1,6 +1,6 @@
 namespace YourNamespace.Models
 {
-    public class OrderUserDetail
+    public class OrderUserDetail : IEntity
     {
         public int Id { get; set; }
         public int OrderId { get; set; }

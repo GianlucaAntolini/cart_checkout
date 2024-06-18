@@ -1,6 +1,6 @@
 namespace YourNamespace.Models
 {
-public class NewsletterSubscription
+public class NewsletterSubscription : IEntity
 {
     public int Id { get; set; }
     public string Email { get; set; }

@@ -20,3 +20,66 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+html,
+body {
+  font-size: 14px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.page-container {
+  width: 70%;
+  margin: 100px auto 0;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+table tr td,
+table thead th,
+table tfoot td {
+  border: 1px solid #bbb;
+  padding: 10px;
+}
+
+table.cart-items {
+  width: 100%;
+}
+
+.tac {
+  text-align: center;
+}
+
+.tar {
+  text-align: right;
+}
+
+td.cart-action span {
+  cursor: pointer;
+  padding: 0 10px;
+}
+
+section {
+  padding: 30px 0;
+  border-top: 1px solid #f0f0f0;
+}
+
+input,
+select {
+  padding: 5px 10px;
+}
+
+button {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.field {
+  margin-bottom: 20px;
+}
+
+form
+{
+    width: 100%;
+}

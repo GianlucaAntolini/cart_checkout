@@ -1,6 +1,6 @@
 namespace YourNamespace.Models
 {
-    public class CouponProduct
+    public class CouponProduct : IEntity
 {
     public int Id { get; set; }
     public int CouponId { get; set; }

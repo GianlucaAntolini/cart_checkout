@@ -1,6 +1,6 @@
 namespace YourNamespace.Models
 {
-   public class OrderPayment
+   public class OrderPayment : IEntity
 {
     public int Id { get; set; }
     public int OrderId { get; set; }

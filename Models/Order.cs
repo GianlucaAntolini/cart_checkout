@@ -1,6 +1,6 @@
 namespace YourNamespace.Models
 {
- public class Order
+ public class Order : IEntity
 {
     public int Id { get; set; }
     public decimal TotalAmount { get; set; }
