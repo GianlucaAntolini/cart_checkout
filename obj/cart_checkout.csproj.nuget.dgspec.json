@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\cart_checkout.csproj": {}
+    "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\cart_checkout.csproj": {}
   },
   "projects": {
-    "C:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\cart_checkout.csproj": {
+    "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\cart_checkout.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\cart_checkout.csproj",
+        "projectUniqueName": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\cart_checkout.csproj",
         "projectName": "cart_checkout",
-        "projectPath": "C:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\cart_checkout.csproj",
+        "projectPath": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\cart_checkout.csproj",
         "packagesPath": "C:\\Users\\gianluca.antolini\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\obj\\",
+        "outputPath": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\gianluca.antolini\\AppData\\Roaming\\NuGet\\NuGet.Config"

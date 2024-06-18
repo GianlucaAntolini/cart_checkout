@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "cart_checkout/1.0.0": {
+        "runtime": {
+          "cart_checkout.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "cart_checkout/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
