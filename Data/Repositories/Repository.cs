@@ -1,8 +1,5 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using YourNamespace.Data;
-using YourNamespace.Models;
 
 public abstract class Repository<T> : ControllerBase, IRepository<T> where T : class, IEntity
 {

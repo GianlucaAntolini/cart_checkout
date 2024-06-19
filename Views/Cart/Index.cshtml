@@ -57,7 +57,11 @@
                                          @(products.First(p => p.Id == orderProduct.ProductId).StockQuantity <= orderProduct.Quantity ? "disabled" : "")>+</button>
                                 </form>
                             </td>
-                            <td class="row-total tar">@orderProduct.Product.Price</td>
+                            <td class="row-total tar">
+                                @orderProduct.Price
+                                <br />
+                                @orderProduct.PriceWithCoupon
+                                </td>
                         </tr>
                     }
 
@@ -67,20 +71,28 @@
                 <tfoot>
                     <tr>
                         <td colspan="4">&nbsp;</td>
-                        <td class="cart-total tar">@order.TotalAmount</td>
-                        <td class="cart-total tar">@order.TotalAmountWithCoupon</td>
+                        <td class="cart-total tar">
+                            @order.TotalAmount
+                            <br />
+                            @order.TotalAmountWithCoupon
+                            
+                            </td>
 
                     </tr>
 
                 </tfoot>
             </table>
         </section>
+        <!-- Would be great to do this with AJAX -->
+                <section class="cart-coupon tar">
 
-        <section class="cart-coupon tar">
-            <span class="cart-total-label">Inserisci codice coupon:</span>
-            <input type="text" name="coupon-code" />
-            <button>Applica coupon</button>
-        </section>
+        <form asp-action="ApplyCoupon" method="post">
+            <input type="text" name="couponCode" />
+            <button type="submit">Applica coupon</button>
+        </form>
+                </section>
+
+
 
         <section class="tar">
             <a class="button" href="./user-info.html">Procedi</a>

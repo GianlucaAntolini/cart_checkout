@@ -13,12 +13,15 @@ namespace YourNamespace.Controllers
         private readonly OrderRepository _orderRepository;
         private readonly OrderProductRepository _orderProductRepository;
 
+        private readonly CouponRepository _couponRepository;
+
         public CartController(IUnitOfwork unitOfwork)
         {
             _unitOfWork = unitOfwork;
             _productRepository = new ProductRepository(_unitOfWork);
             _orderProductRepository = new OrderProductRepository(_unitOfWork);
             _orderRepository = new OrderRepository(_unitOfWork);
+            _couponRepository = new CouponRepository(_unitOfWork);
         }
 
         public async Task<IActionResult> Index()
@@ -95,6 +98,7 @@ namespace YourNamespace.Controllers
                         ProductId = orderId,
                         Quantity = 1,
                         Price = product.Price,
+                        PriceWithCoupon = product.Price,
                         Product = product
                     });
 
@@ -173,6 +177,7 @@ namespace YourNamespace.Controllers
                         return RedirectToAction("Index");
                     }
                     orderProduct.Quantity++;
+                    orderProduct.Price = orderProduct.Product.Price * orderProduct.Quantity;
                     order.TotalAmount += orderProduct.Price;
                     order.TotalAmountWithCoupon += orderProduct.Price;
                     await _orderRepository.Update(orderId, order);
@@ -210,6 +215,7 @@ namespace YourNamespace.Controllers
                         return RedirectToAction("Index");
                     }
                     orderProduct.Quantity--;
+                    orderProduct.Price = orderProduct.Product.Price * orderProduct.Quantity;
                     order.TotalAmount -= orderProduct.Price;
                     order.TotalAmountWithCoupon -= orderProduct.Price;
                     await _orderRepository.Update(orderId, order);
@@ -220,8 +226,71 @@ namespace YourNamespace.Controllers
         }
 
 
+        [HttpPost]
 
+        public async Task<IActionResult> ApplyCoupon(string couponCode)
+        {
+            // Get the order id from the session else redirect to the index to create a new order
+            int orderId = HttpContext.Session.GetInt32("OrderId") ?? 0;
+            if (orderId == 0)
+            {
+                return RedirectToAction("Index");
+            }
+
+            var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
+            if (orderResult.Value is Order order)
+            {
+                // Check if the coupon code is valid
+                //TODO: check why is not working HERE!!!!!!!!!!! -> With GET it gets all the coupons but without the products
+                var coupon = await _couponRepository.GetByCodeWithProducts(couponCode);
+                if (coupon.Value is Coupon validCoupon)
+                {
+                    // If the coupon is active and it applies to at least one of the products in the order, apply the discount to the order
+                    if (validCoupon.Active && order.OrderProducts.Any(op => validCoupon.CouponProducts.Any(cp => cp.ProductId == op.ProductId)))
+                    {
+                        var appliable = false;
+                        order.CouponId = validCoupon.Id;
+                        // How to calculate the discount:
+                        // For each orderroduct in the order:
+                        //         SKIP IF:
+                        //         - product is not discountable by the coupon skip
+                        //         - orderproduct price is less than the minprice of the coupn
+                        //         APPLY DISCOUNT (only if not all products are skipped):
+                        //         - create a cap variable toDiscountPrice that is the minimum of the maxprice of the coupon and the orderproduct price
+                        //         - apply the Coupon.DiscountPercentage to the toDiscountPrice
+                        //         - set the orderproduct priceWithCoupon to the toDiscountPrice
+                        //         - set the order totalAmountWithCoupon to the sum of all orderProducts priceWithCoupon
+                        //         - set the coupon active to false (TODO: maybe coupon are one time use only)
+                        foreach (var orderProduct in order.OrderProducts)
+                        {
+                            if (validCoupon.CouponProducts.Any(cp => cp.ProductId == orderProduct.ProductId) && orderProduct.Price >= validCoupon.MinPrice)
+                            {
+                                appliable = true;
+                                var toDiscountPrice = Math.Min(validCoupon.MaxPrice, orderProduct.Price);
+                                toDiscountPrice -= toDiscountPrice * validCoupon.PercentageDiscount / 100;
+                                orderProduct.PriceWithCoupon = toDiscountPrice;
+                            }
+
+                        }
+                        if (appliable)
+                        {
+                            order.TotalAmountWithCoupon = order.OrderProducts.Sum(op => op.PriceWithCoupon);
+                            validCoupon.Active = false;
+                            await _orderRepository.Update(orderId, order);
+                            await _couponRepository.Update(validCoupon.Id, validCoupon);
+                        }
+                    }
+
+                }
+            }
+
+            return RedirectToAction("Index");
+
+
+        }
     }
+
+
 
 
 }
