@@ -2,7 +2,9 @@
 @model Product
 @{
     ViewBag.Title = "Cart";
-   var products= ViewBag.Products as List<Product>;
+    // Get the products and order from the viewbag if it is not null
+   var products = ViewBag.Products as List<Product>;
+    var order = ViewBag.Order as Order;
 }
 
 
@@ -32,39 +34,44 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Example static rows, these should be dynamic based on cart data -->
-                    <tr>
-                        <td class="cart-action tac">
-                            <span>x</span>
-                        </td>
-                        <td class="cart-item">Prodotto 1</td>
-                        <td class="cart-price tar">12</td>
-                        <td class="cart-action cart-quantity tac">
-                            <span class="cart-quantity-minus">-</span>
-                            <span class="cart-quantity-value">3</span>
-                            <span class="cart-quantity-plus">+</span>
-                        </td>
-                        <td class="row-total tar">36</td>
-                    </tr>
-                    <tr>
-                        <td class="cart-action tac">
-                            <span>x</span>
-                        </td>
-                        <td class="cart-item">Prodotto 2</td>
-                        <td class="cart-price tar">4</td>
-                        <td class="cart-action cart-quantity tac">
-                            <span class="cart-quantity-minus">-</span>
-                            <span class="cart-quantity-value">2</span>
-                            <span class="cart-quantity-plus">+</span>
-                        </td>
-                        <td class="row-total tar">8</td>
-                    </tr>
+                    @foreach (var orderProduct in order.OrderProducts)
+                    {
+                        <tr>
+                            <td class="cart-action tac">
+                               <form asp-action="RemoveProduct" method="post">
+                                <input type="hidden" name="orderProductId" value="@orderProduct.Id" />
+                                <button type="submit" class="cart-remove">X</button>
+                            </form>
+                            </td>
+                            <td class="cart-item">@orderProduct.Product.Name</td>
+                            <td class="cart-price tar">@orderProduct.Product.Price</td>
+                            <td class="cart-action cart-quantity tac">
+                                <form asp-action="DecreaseProductQuantity" method="post">
+                                    <input type="hidden" name="orderProductId" value="@orderProduct.Id" />
+                                    <button type="submit" class="cart-quantity-minus" @(orderProduct.Quantity == 1 ? "disabled" : "")>-</button>
+                                </form>
+                                <span class="cart-quantity-value">@orderProduct.Quantity</span>
+                                <form asp-action="IncreaseProductQuantity" method="post">
+                                    <input type="hidden" name="orderProductId" value="@orderProduct.Id" />
+                                    <button type="submit" class="cart-quantity-plus" 
+                                         @(products.First(p => p.Id == orderProduct.ProductId).StockQuantity == orderProduct.Quantity ? "disabled" : "")>+</button>
+                                </form>
+                            </td>
+                            <td class="row-total tar">@orderProduct.Product.Price</td>
+                        </tr>
+                    }
+
+
+                    
                 </tbody>
                 <tfoot>
                     <tr>
                         <td colspan="4">&nbsp;</td>
-                        <td class="cart-total tar">44</td>
+                        <td class="cart-total tar">@order.TotalAmount</td>
+                        <td class="cart-total tar">@order.TotalAmountWithCoupon</td>
+
                     </tr>
+
                 </tfoot>
             </table>
         </section>

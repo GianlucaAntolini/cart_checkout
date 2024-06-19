@@ -9,5 +9,7 @@ namespace YourNamespace.Models
         public string Email { get; set; }
         public int NationId { get; set; }
         public Nation Nation { get; set; }
+
+        public Order Order { get; set; }
     }
 }

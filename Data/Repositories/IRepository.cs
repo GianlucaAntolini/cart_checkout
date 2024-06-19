@@ -1,19 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
 
-   public interface IRepository<T> where T : class
-   {
-        // Get all entities
-        public Task<ActionResult<IEnumerable<T>>> Get();
+public interface IRepository<T> where T : class
+{
+    // Get all entities
+    public Task<ActionResult<IEnumerable<T>>> Get();
 
-        // Get an entity by id
-        public Task<ActionResult<T>> GetById(int id);
+    // Get an entity by id
+    public Task<ActionResult<T>> GetById(int id);
 
-        // Create a new entity        
-        public Task<ActionResult<T>> Create(T entity);
+    // First available id
+    public Task<ActionResult<int>> GetFirstAvailableId();
 
-        // Update an entity
-        public Task<IActionResult> Update(int id, T entity);
+    // Create a new entity        
+    public Task<ActionResult<T>> Create(T entity);
 
-        // Delete an entity
-        public Task<IActionResult> Delete(int id);
-    }
+    // Update an entity
+    public Task<IActionResult> Update(int id, T entity);
+
+    // Delete an entity
+    public Task<IActionResult> Delete(int id);
+}
