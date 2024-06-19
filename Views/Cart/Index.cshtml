@@ -48,13 +48,13 @@
                             <td class="cart-action cart-quantity tac">
                                 <form asp-action="DecreaseProductQuantity" method="post">
                                     <input type="hidden" name="orderProductId" value="@orderProduct.Id" />
-                                    <button type="submit" class="cart-quantity-minus" @(orderProduct.Quantity == 1 ? "disabled" : "")>-</button>
+                                    <button type="submit" class="cart-quantity-minus" @(orderProduct.Quantity <= 1 ? "disabled" : "")>-</button>
                                 </form>
                                 <span class="cart-quantity-value">@orderProduct.Quantity</span>
                                 <form asp-action="IncreaseProductQuantity" method="post">
                                     <input type="hidden" name="orderProductId" value="@orderProduct.Id" />
                                     <button type="submit" class="cart-quantity-plus" 
-                                         @(products.First(p => p.Id == orderProduct.ProductId).StockQuantity == orderProduct.Quantity ? "disabled" : "")>+</button>
+                                         @(products.First(p => p.Id == orderProduct.ProductId).StockQuantity <= orderProduct.Quantity ? "disabled" : "")>+</button>
                                 </form>
                             </td>
                             <td class="row-total tar">@orderProduct.Product.Price</td>

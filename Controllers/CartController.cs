@@ -100,7 +100,6 @@ namespace YourNamespace.Controllers
 
                     order.TotalAmount += product.Price;
                     order.TotalAmountWithCoupon += product.Price;
-                    product.StockQuantity--;
                 }
 
                 // update the order in the database
@@ -168,6 +167,11 @@ namespace YourNamespace.Controllers
                 var orderProduct = order.OrderProducts.FirstOrDefault(op => op.Id == orderProductId);
                 if (orderProduct != null)
                 {
+                    // If the user is trying to be sneaky and increase the quantity of a product that is already the stock quantity, just return to the index
+                    if (orderProduct.Quantity == orderProduct.Product.StockQuantity)
+                    {
+                        return RedirectToAction("Index");
+                    }
                     orderProduct.Quantity++;
                     order.TotalAmount += orderProduct.Price;
                     order.TotalAmountWithCoupon += orderProduct.Price;
@@ -188,12 +192,23 @@ namespace YourNamespace.Controllers
                 return RedirectToAction("Index");
             }
 
+
+
             var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
             if (orderResult.Value is Order order)
             {
                 var orderProduct = order.OrderProducts.FirstOrDefault(op => op.Id == orderProductId);
+
+
+
+
                 if (orderProduct != null)
                 {
+                    // If the user is trying to be sneaky and decrease the quantity of a product that is already 1, just return to the index
+                    if (orderProduct.Quantity == 1)
+                    {
+                        return RedirectToAction("Index");
+                    }
                     orderProduct.Quantity--;
                     order.TotalAmount -= orderProduct.Price;
                     order.TotalAmountWithCoupon -= orderProduct.Price;
