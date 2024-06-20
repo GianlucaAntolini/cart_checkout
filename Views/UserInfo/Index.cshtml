@@ -1,13 +1,14 @@
    @using YourNamespace.Models;
 @{
     ViewBag.Title = "User Info";;
-       var nations = ViewBag.Nations as List<Nation>;
+       var nations = ViewBag.Nations as List<Nation> ?? new List<Nation>();
 
 }
    
    
     <div class="page-container">
-  
+            <form asp-action="SetUserData" method="post">
+
       <h3>Dati utente</h3>
         <section class="user-data">
           <div class="field">
@@ -20,10 +21,10 @@
             <input type="email" name="email" placeholder="Email" />
           </div>
           <div class="field field-select">
-                 <select name="product" placeholder="Prodotto">
+                 <select name="nation" placeholder="Nazione">
               @foreach (var nation in nations)
               {
-                <option value="@nation.Name">@nation.Name</option>
+                <option value="@nation.Id">@nation.Name</option>
               }
             </select>
           </div>
@@ -49,9 +50,10 @@
         </section>
 
         <section>
-          <form asp-action="Cart" method="post">
-        <button type="submit" class="button">Indietro</button>
-    </form>
-          <button>Procedi</button>
+        <button type="submit" name="action" class="button">Indietro</button>
+          <button type="submit" name="action" class="button" value="continue">Procedi</button>
         </section>
+            </form>
+
+         
     </div>
