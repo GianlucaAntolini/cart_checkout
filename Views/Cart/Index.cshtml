@@ -9,18 +9,6 @@
 
 
     <div class="page-container">
-        <h3>Prodotti</h3>
-         
-            <div class="field field-select">
-            <select name="product" placeholder="Prodotto">
-              @foreach (var product in products)
-              {
-                <option value="@product.Name">@product.Name</option>
-              }
-            </select>
-
-
-          </div>
         <h3>Carrello</h3>
         <section class="cart-items">
             <table class="cart-items">
@@ -82,12 +70,8 @@
                                 <span class="discountPercentage">- @order.Coupon.PercentageDiscount.ToString().Split('.')[0]%</span>
                                 <br />
                                 <span>@order.TotalAmountWithCoupon</span>
-                            }
-
-
-                            
+                            }                            
                             </td>
-
                     </tr>
 
                 </tfoot>
@@ -116,6 +100,9 @@
 
 
         <section class="tar">
-            <a class="button" href="./user-info.html">Procedi</a>
-        </section>
+    <form asp-action="UserInfo" method="post">
+         <button type="submit" class="button" 
+                    @(order.OrderProducts == null || order.OrderProducts.Count == 0 ? "disabled" : "")>Procedi</button>
+    </form>
+</section>
     </div>

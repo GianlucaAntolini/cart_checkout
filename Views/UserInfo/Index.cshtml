@@ -1,0 +1,57 @@
+   @using YourNamespace.Models;
+@{
+    ViewBag.Title = "User Info";;
+       var nations = ViewBag.Nations as List<Nation>;
+
+}
+   
+   
+    <div class="page-container">
+  
+      <h3>Dati utente</h3>
+        <section class="user-data">
+          <div class="field">
+            <input type="text" name="first-name" placeholder="Nome" />
+          </div>
+          <div class="field">
+            <input type="text" name="last-name" placeholder="Cognome" />
+          </div>
+          <div class="field">
+            <input type="email" name="email" placeholder="Email" />
+          </div>
+          <div class="field field-select">
+                 <select name="product" placeholder="Prodotto">
+              @foreach (var nation in nations)
+              {
+                <option value="@nation.Name">@nation.Name</option>
+              }
+            </select>
+          </div>
+          <div class="field field-checkbox">
+            <label>Iscriviti alla newsletter</label>
+            <input type="checkbox" name="newsletter" />
+          </div>
+          <div class="field field-checkbox">
+            <label>Richiedi fattura</label>
+            <input type="checkbox" name="invoice" />
+          </div>
+          <div class="field">
+            <input type="text" name="fiscal-tax-number" placeholder="Partita IVA" />
+          </div>
+          <div class="field">
+            <input type="text" name="fiscal-code-number" placeholder="Codice Fiscale" />
+          </div>
+          <div class="field field-checkbox">
+            <label>Ho letto e accetto l'<a href="terms_and_conditions.html" target="_blank">informativa sulla privacy</a></label>
+
+            <input type="checkbox" name="privacy" />
+          </div>
+        </section>
+
+        <section>
+          <form asp-action="Cart" method="post">
+        <button type="submit" class="button">Indietro</button>
+    </form>
+          <button>Procedi</button>
+        </section>
+    </div>

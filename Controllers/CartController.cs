@@ -355,6 +355,32 @@ namespace YourNamespace.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> UserInfoAsync()
+        {
+            // Redirect to the UserInfo page only if there is at least one product in the order
+            int orderId = HttpContext.Session.GetInt32("OrderId") ?? 0;
+            if (orderId == 0)
+            {
+                return RedirectToAction("Index");
+            }
+
+            var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
+            if (orderResult.Value is Order order)
+            {
+                if (order.OrderProducts.Count == 0)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+
+
+            return RedirectToAction("Index", "UserInfo");
+        }
+
+
+
     }
 
 
