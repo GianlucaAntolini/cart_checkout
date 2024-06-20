@@ -251,7 +251,7 @@ namespace YourNamespace.Controllers
             // If the coupon is active and it applies to at least one of the products in the order, apply the discount to the order
             if (toApplyCoupon != null && toApplyCoupon.Active && toApplyCoupon.CouponProducts != null && order.OrderProducts.Any(op => toApplyCoupon.CouponProducts.Any(cp => cp.ProductId == op.ProductId)))
             {
-                var appliable = false;
+                var applied = false;
                 order.CouponId = toApplyCoupon.Id;
                 order.Coupon = toApplyCoupon;
                 // How to calculate the discount:
@@ -265,14 +265,19 @@ namespace YourNamespace.Controllers
                 //         - set the orderproduct priceWithCoupon to the toDiscountPrice
                 //         - set the order totalAmountWithCoupon to the sum of all orderProducts priceWithCoupon
                 //         - set the coupon active to false (TODO: maybe coupon are one time use only)
+
                 foreach (var orderProduct in order.OrderProducts)
                 {
                     if (toApplyCoupon.CouponProducts.Any(cp => cp.ProductId == orderProduct.ProductId) && orderProduct.Price >= toApplyCoupon.MinPrice)
                     {
-                        appliable = true;
                         var toDiscountPrice = Math.Min(toApplyCoupon.MaxPrice, orderProduct.Price);
                         //TODO: check if no price has changed because maybe he discounted it but he reached the cap and the price didn't change
                         toDiscountPrice -= toDiscountPrice * toApplyCoupon.PercentageDiscount / 100;
+                        // If the price is actually different set applied to true
+                        if (toDiscountPrice != orderProduct.Price)
+                        {
+                            applied = true;
+                        }
                         orderProduct.PriceWithCoupon = toDiscountPrice;
                     }
                     else
@@ -283,7 +288,7 @@ namespace YourNamespace.Controllers
 
                 }
                 // If at least one product was appliable set the total amount with coupon to the sum of all orderproducts priceWithCoupon
-                if (appliable)
+                if (applied)
                 {
                     order.TotalAmount = order.OrderProducts.Sum(op => op.Price);
                     order.TotalAmountWithCoupon = order.OrderProducts.Sum(op => op.PriceWithCoupon);

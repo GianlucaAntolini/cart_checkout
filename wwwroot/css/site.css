@@ -8,7 +8,11 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
@@ -79,7 +83,44 @@ button {
   margin-bottom: 20px;
 }
 
-form
-{
-    width: 100%;
+form {
+  width: 100%;
+}
+
+.strike {
+  text-decoration: line-through;
+}
+
+.discountPercentage {
+  color: red;
+  font-style: italic;
+}
+
+.couponCode {
+  display: inline-block;
+}
+
+.removeCouponForm {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.removeCouponForm button {
+  background: none;
+  border: none;
+  color: red;
+  font-weight: bold;
+  font-style: italic;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.removeCouponForm .couponText {
+  margin-right: 5px;
+}
+
+.removeCouponForm .removeCoupon {
+  margin-left: 10px;
 }
