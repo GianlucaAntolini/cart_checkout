@@ -245,6 +245,14 @@
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
     },
     {
+      "Id": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\privacy.html",
+      "PackagePath": "staticwebassets\\privacy.html"
+    },
+    {
+      "Id": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\terms_and_conditions.html",
+      "PackagePath": "staticwebassets\\terms_and_conditions.html"
+    },
+    {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.cart_checkout.props",
       "PackagePath": "build\\cart_checkout.props"
     },

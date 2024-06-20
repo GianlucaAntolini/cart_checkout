@@ -100,13 +100,13 @@ form {
   display: inline-block;
 }
 
-.removeCouponForm {
+.couponForm {
   display: flex;
   align-items: center;
   text-decoration: none;
 }
 
-.removeCouponForm button {
+.couponForm button {
   background: none;
   border: none;
   color: red;
@@ -117,10 +117,10 @@ form {
   align-items: center;
 }
 
-.removeCouponForm .couponText {
+.couponForm .couponText {
   margin-right: 5px;
 }
 
-.removeCouponForm .removeCoupon {
+.couponForm .removeCoupon {
   margin-left: 10px;
 }

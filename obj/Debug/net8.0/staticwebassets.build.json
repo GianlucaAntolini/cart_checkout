@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "XoAvfv4z2MSoWfRv7JndvqSRqToKF2uBch98erv4Oys=",
+  "Hash": "rr2AImJRoIwG3b9XTPM13jPeoOaD2ECTMRAJaAYYZtk=",
   "Source": "cart_checkout",
   "BasePath": "_content/cart_checkout",
   "Mode": "Default",
@@ -1193,6 +1193,44 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\lib\\jquery\\LICENSE.txt"
+    },
+    {
+      "Identity": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\privacy.html",
+      "SourceId": "cart_checkout",
+      "SourceType": "Discovered",
+      "ContentRoot": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\",
+      "BasePath": "_content/cart_checkout",
+      "RelativePath": "privacy.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\privacy.html"
+    },
+    {
+      "Identity": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\terms_and_conditions.html",
+      "SourceId": "cart_checkout",
+      "SourceType": "Discovered",
+      "ContentRoot": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\",
+      "BasePath": "_content/cart_checkout",
+      "RelativePath": "terms_and_conditions.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\terms_and_conditions.html"
     }
   ]
 }

@@ -10,6 +10,12 @@ namespace YourNamespace.Data.Repositories
         {
         }
 
+        // Get by email
+        public async Task<ActionResult<NewsletterSubscription>> GetByEmail(string email)
+        {
+            return await dbSet.FirstOrDefaultAsync(ns => ns.Email == email);
+        }
+
 
         // Update by email
 

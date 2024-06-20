@@ -1,59 +1,53 @@
-   @using YourNamespace.Models;
+@using YourNamespace.Models;
 @{
-    ViewBag.Title = "User Info";;
-       var nations = ViewBag.Nations as List<Nation> ?? new List<Nation>();
-
+    ViewBag.Title = "User Info";
+    var nations = ViewBag.Nations as List<Nation> ?? new List<Nation>();
 }
-   
-   
-    <div class="page-container">
-            <form asp-action="SetUserData" method="post">
 
-      <h3>Dati utente</h3>
+<div class="page-container" id="user-info-page">
+    <form asp-action="SetUserData" method="post">
+        <h3>Dati utente</h3>
         <section class="user-data">
-          <div class="field">
-            <input type="text" name="first-name" placeholder="Nome" />
-          </div>
-          <div class="field">
-            <input type="text" name="last-name" placeholder="Cognome" />
-          </div>
-          <div class="field">
-            <input type="email" name="email" placeholder="Email" />
-          </div>
-          <div class="field field-select">
-                 <select name="nation" placeholder="Nazione">
-              @foreach (var nation in nations)
-              {
-                <option value="@nation.Id">@nation.Name</option>
-              }
-            </select>
-          </div>
-          <div class="field field-checkbox">
-            <label>Iscriviti alla newsletter</label>
-            <input type="checkbox" name="newsletter" />
-          </div>
-          <div class="field field-checkbox">
-            <label>Richiedi fattura</label>
-            <input type="checkbox" name="invoice" />
-          </div>
-          <div class="field">
-            <input type="text" name="fiscal-tax-number" placeholder="Partita IVA" />
-          </div>
-          <div class="field">
-            <input type="text" name="fiscal-code-number" placeholder="Codice Fiscale" />
-          </div>
-          <div class="field field-checkbox">
-            <label>Ho letto e accetto l'<a href="terms_and_conditions.html" target="_blank">informativa sulla privacy</a></label>
-
-            <input type="checkbox" name="privacy" />
-          </div>
+            <div class="field">
+                <input type="text" name="first-name" placeholder="Nome" />
+            </div>
+            <div class="field">
+                <input type="text" name="last-name" placeholder="Cognome" />
+            </div>
+            <div class="field">
+                <input type="email" name="email" placeholder="Email" />
+            </div>
+            <div class="field field-select">
+                <select name="nation" placeholder="Nazione">
+                    @foreach (var nation in nations)
+                    {
+                        <option value="@nation.Id">@nation.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="field field-checkbox">
+                <label>Iscriviti alla newsletter</label>
+                <input type="checkbox" name="newsletter" />
+            </div>
+            <div class="field field-checkbox">
+                <label>Richiedi fattura</label>
+                <input type="checkbox" name="invoice" id="invoice-checkbox" />
+            </div>
+            <div class="field" id="fiscal-tax-field">
+                <input type="text" name="fiscal-tax-number" placeholder="Partita IVA" />
+            </div>
+            <div class="field" id="fiscal-code-field">
+                <input type="text" name="fiscal-code-number" placeholder="Codice Fiscale" />
+            </div>
+            <div class="field field-checkbox">
+                <label>Ho letto e accetto l'<a href="privacy.html" target="_blank">informativa sulla privacy</a></label>
+                <input type="checkbox" name="privacy" />
+            </div>
         </section>
-
         <section>
-        <button type="submit" name="action" class="button">Indietro</button>
-          <button type="submit" name="action" class="button" value="continue">Procedi</button>
+            <button type="submit" name="action" class="button">Indietro</button>
+            <button id="continueButton" type="submit" name="action" class="button" value="continue">Procedi</button>
         </section>
-            </form>
+    </form>
+</div>
 
-         
-    </div>

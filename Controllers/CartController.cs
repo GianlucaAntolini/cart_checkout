@@ -272,13 +272,13 @@ namespace YourNamespace.Controllers
                     {
                         var toDiscountPrice = Math.Min(toApplyCoupon.MaxPrice, orderProduct.Price);
                         //TODO: check if no price has changed because maybe he discounted it but he reached the cap and the price didn't change
-                        toDiscountPrice -= toDiscountPrice * toApplyCoupon.PercentageDiscount / 100;
+                        var newPrice = orderProduct.Price - toDiscountPrice * toApplyCoupon.PercentageDiscount / 100;
                         // If the price is actually different set applied to true
-                        if (toDiscountPrice != orderProduct.Price)
+                        if (newPrice != orderProduct.Price)
                         {
                             applied = true;
                         }
-                        orderProduct.PriceWithCoupon = toDiscountPrice;
+                        orderProduct.PriceWithCoupon = newPrice;
                     }
                     else
                     {

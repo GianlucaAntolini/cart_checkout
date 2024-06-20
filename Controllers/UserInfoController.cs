@@ -50,11 +50,6 @@ namespace YourNamespace.Controllers
         }
 
 
-        [HttpPost]
-        public IActionResult Cart()
-        {
-            return RedirectToAction("Index", "Cart");
-        }
 
 
         // Check if order id is not in session or if the order has no products
@@ -114,7 +109,7 @@ namespace YourNamespace.Controllers
             //  or if privacy is false or if the nation is not in the list
             if (name == null || name == "" || surname == null || surname == "" || nationId == null || email == null || email == "" || (invoice && (piva == null || piva == "" || cf == null || cf == "")) || !privacy || !nations.Any(n => n.Id == nationId))
             {
-                return View("Index");
+                return RedirectToAction("Index");
             }
 
 
@@ -156,6 +151,7 @@ namespace YourNamespace.Controllers
                 await _orderRepository.Update(orderId, order);
 
                 // If newsletter is true add the email to the newsletter list, already set it to active since all sites do that
+                // Can be changed in the future if needed to do it only after payment
                 if (newsletter)
                 {
                     var newsletterSubscription = new NewsletterSubscription
@@ -168,7 +164,7 @@ namespace YourNamespace.Controllers
 
                 }
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Checkout");
             }
 
 
