@@ -14,6 +14,7 @@ namespace YourNamespace.Data.Repositories
         public async Task<ActionResult<Coupon>> GetByCodeWithProducts(string code)
         {
             return await dbSet.Include(c => c.CouponProducts).ThenInclude(cp => cp.Product).FirstOrDefaultAsync(c => c.Code == code);
+
         }
     }
 }

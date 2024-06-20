@@ -60,7 +60,10 @@
                             <td class="row-total tar">
                                 @orderProduct.Price
                                 <br />
+                                @if (order.CouponId != null)
+                                {
                                 @orderProduct.PriceWithCoupon
+                                }
                                 </td>
                         </tr>
                     }
@@ -73,8 +76,15 @@
                         <td colspan="4">&nbsp;</td>
                         <td class="cart-total tar">
                             @order.TotalAmount
-                            <br />
-                            @order.TotalAmountWithCoupon
+                            @if (order.CouponId != null)
+                            {
+                                <br />
+                                @order.Coupon.PercentageDiscount
+                                <br />
+                                @order.TotalAmountWithCoupon
+                            }
+
+
                             
                             </td>
 

@@ -148,7 +148,7 @@ namespace YourNamespace.Controllers
                     order.OrderProducts.Remove(orderProduct);
                     order.TotalAmount -= orderProduct.Price * orderProduct.Quantity;
                     order.TotalAmountWithCoupon -= orderProduct.Price * orderProduct.Quantity;
-                    await _orderRepository.Update(orderId, order);
+                    await UpdateOrderPriceAsync(order, null);
                 }
             }
 
@@ -180,7 +180,7 @@ namespace YourNamespace.Controllers
                     orderProduct.Price = orderProduct.Product.Price * orderProduct.Quantity;
                     order.TotalAmount += orderProduct.Price;
                     order.TotalAmountWithCoupon += orderProduct.Price;
-                    await _orderRepository.Update(orderId, order);
+                    await UpdateOrderPriceAsync(order, null);
                 }
             }
 
@@ -218,11 +218,91 @@ namespace YourNamespace.Controllers
                     orderProduct.Price = orderProduct.Product.Price * orderProduct.Quantity;
                     order.TotalAmount -= orderProduct.Price;
                     order.TotalAmountWithCoupon -= orderProduct.Price;
-                    await _orderRepository.Update(orderId, order);
+                    await UpdateOrderPriceAsync(order, null);
                 }
             }
 
             return RedirectToAction("Index");
+        }
+
+        private void resetOrderPrice(Order order)
+        {
+            // Reset the order price and remove the coupon
+            foreach (var orderProduct in order.OrderProducts)
+            {
+                orderProduct.PriceWithCoupon = orderProduct.Price;
+            }
+            order.TotalAmountWithCoupon = order.TotalAmount;
+
+            order.CouponId = null;
+
+        }
+
+        // Function to calculate amount of the order (considering the coupon if present)
+        private async Task<IActionResult> UpdateOrderPriceAsync(Order order, Coupon? paramCoupon)
+        {
+            // If coupon is null take it from the order, if still null reset all prices
+            // This is done becuse:
+            // - if the user is trying to apply a coupon, the coupon is passed as a parameter
+            // - if the user is trying to increase/decrease the quantity of a product, the coupon is taken from the order
+            // - also if he 
+
+            var toApplyCoupon = paramCoupon ?? order.Coupon;
+            // If the coupon is active and it applies to at least one of the products in the order, apply the discount to the order
+            if (toApplyCoupon != null && toApplyCoupon.Active && toApplyCoupon.CouponProducts != null && order.OrderProducts.Any(op => toApplyCoupon.CouponProducts.Any(cp => cp.ProductId == op.ProductId)))
+            {
+                var appliable = false;
+                order.CouponId = toApplyCoupon.Id;
+                order.Coupon = toApplyCoupon;
+                // How to calculate the discount:
+                // For each orderroduct in the order:
+                //         SKIP IF:
+                //         - product is not discountable by the coupon skip
+                //         - orderproduct price is less than the minprice of the coupn
+                //         APPLY DISCOUNT (only if not all products are skipped):
+                //         - create a cap variable toDiscountPrice that is the minimum of the maxprice of the coupon and the orderproduct price
+                //         - apply the Coupon.DiscountPercentage to the toDiscountPrice
+                //         - set the orderproduct priceWithCoupon to the toDiscountPrice
+                //         - set the order totalAmountWithCoupon to the sum of all orderProducts priceWithCoupon
+                //         - set the coupon active to false (TODO: maybe coupon are one time use only)
+                foreach (var orderProduct in order.OrderProducts)
+                {
+                    if (toApplyCoupon.CouponProducts.Any(cp => cp.ProductId == orderProduct.ProductId) && orderProduct.Price >= toApplyCoupon.MinPrice)
+                    {
+                        appliable = true;
+                        var toDiscountPrice = Math.Min(toApplyCoupon.MaxPrice, orderProduct.Price);
+                        //TODO: check if no price has changed because maybe he discounted it but he reached the cap and the price didn't change
+                        toDiscountPrice -= toDiscountPrice * toApplyCoupon.PercentageDiscount / 100;
+                        orderProduct.PriceWithCoupon = toDiscountPrice;
+                    }
+                    else
+                    {
+                        // Reset just the price with coupon of this product
+                        orderProduct.PriceWithCoupon = orderProduct.Price;
+                    }
+
+                }
+                // If at least one product was appliable set the total amount with coupon to the sum of all orderproducts priceWithCoupon
+                if (appliable)
+                {
+                    order.TotalAmount = order.OrderProducts.Sum(op => op.Price);
+                    order.TotalAmountWithCoupon = order.OrderProducts.Sum(op => op.PriceWithCoupon);
+                }
+                else
+                {
+                    resetOrderPrice(order);
+                }
+            }
+            else
+            {
+                // Else reset the prices
+                resetOrderPrice(order);
+            }
+
+
+
+            return await _orderRepository.Update(order.Id, order);
+
         }
 
 
@@ -241,52 +321,34 @@ namespace YourNamespace.Controllers
             if (orderResult.Value is Order order)
             {
                 // Check if the coupon code is valid
-                //TODO: check why is not working HERE!!!!!!!!!!! -> With GET it gets all the coupons but without the products
                 var coupon = await _couponRepository.GetByCodeWithProducts(couponCode);
-                if (coupon.Value is Coupon validCoupon)
-                {
-                    // If the coupon is active and it applies to at least one of the products in the order, apply the discount to the order
-                    if (validCoupon.Active && order.OrderProducts.Any(op => validCoupon.CouponProducts.Any(cp => cp.ProductId == op.ProductId)))
-                    {
-                        var appliable = false;
-                        order.CouponId = validCoupon.Id;
-                        // How to calculate the discount:
-                        // For each orderroduct in the order:
-                        //         SKIP IF:
-                        //         - product is not discountable by the coupon skip
-                        //         - orderproduct price is less than the minprice of the coupn
-                        //         APPLY DISCOUNT (only if not all products are skipped):
-                        //         - create a cap variable toDiscountPrice that is the minimum of the maxprice of the coupon and the orderproduct price
-                        //         - apply the Coupon.DiscountPercentage to the toDiscountPrice
-                        //         - set the orderproduct priceWithCoupon to the toDiscountPrice
-                        //         - set the order totalAmountWithCoupon to the sum of all orderProducts priceWithCoupon
-                        //         - set the coupon active to false (TODO: maybe coupon are one time use only)
-                        foreach (var orderProduct in order.OrderProducts)
-                        {
-                            if (validCoupon.CouponProducts.Any(cp => cp.ProductId == orderProduct.ProductId) && orderProduct.Price >= validCoupon.MinPrice)
-                            {
-                                appliable = true;
-                                var toDiscountPrice = Math.Min(validCoupon.MaxPrice, orderProduct.Price);
-                                toDiscountPrice -= toDiscountPrice * validCoupon.PercentageDiscount / 100;
-                                orderProduct.PriceWithCoupon = toDiscountPrice;
-                            }
-
-                        }
-                        if (appliable)
-                        {
-                            order.TotalAmountWithCoupon = order.OrderProducts.Sum(op => op.PriceWithCoupon);
-                            validCoupon.Active = false;
-                            await _orderRepository.Update(orderId, order);
-                            await _couponRepository.Update(validCoupon.Id, validCoupon);
-                        }
-                    }
-
-                }
+                await UpdateOrderPriceAsync(order, coupon.Value is Coupon validCoupon ? validCoupon : null);
             }
 
             return RedirectToAction("Index");
 
 
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveCoupon()
+        {
+            // Get the order id from the session else redirect to the index to create a new order
+            int orderId = HttpContext.Session.GetInt32("OrderId") ?? 0;
+            if (orderId == 0)
+            {
+                return RedirectToAction("Index");
+            }
+
+            var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
+            if (orderResult.Value is Order order)
+            {
+                resetOrderPrice(order);
+                await _orderRepository.Update(orderId, order);
+            }
+
+            return RedirectToAction("Index");
         }
     }
 
