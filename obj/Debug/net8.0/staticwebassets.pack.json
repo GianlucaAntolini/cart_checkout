@@ -13,6 +13,26 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\img\\products\\1.png",
+      "PackagePath": "staticwebassets\\img\\products\\1.png"
+    },
+    {
+      "Id": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\img\\products\\2.png",
+      "PackagePath": "staticwebassets\\img\\products\\2.png"
+    },
+    {
+      "Id": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\img\\products\\3.png",
+      "PackagePath": "staticwebassets\\img\\products\\3.png"
+    },
+    {
+      "Id": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\img\\products\\4.png",
+      "PackagePath": "staticwebassets\\img\\products\\4.png"
+    },
+    {
+      "Id": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\img\\products\\5.png",
+      "PackagePath": "staticwebassets\\img\\products\\5.png"
+    },
+    {
       "Id": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },

@@ -48,7 +48,12 @@
                     {
                         <tr>
                   
-                            <td class="cart-item">@orderProduct.Product.Name</td>
+                            
+                            
+                            <td class="cart-item">
+                                <img src="~/img/products/@(orderProduct.ProductId).png" alt="Product Image"  class="productImage"/>
+                                @orderProduct.Product.Name
+                              </td>
                             <td class="cart-price tar">@orderProduct.Product.Price</td>
                             <td class="cart-action cart-quantity tac">
                          

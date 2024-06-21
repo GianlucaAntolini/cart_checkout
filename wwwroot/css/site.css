@@ -130,3 +130,8 @@ form {
   font-weight: bold;
   font-style: italic;
 }
+
+.productImage {
+  width: 50px;
+  height: 50px;
+}

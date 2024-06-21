@@ -212,6 +212,7 @@ namespace YourNamespace.Controllers
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
                                 Name = orderProduct.Product.Name,
+                                Images = new List<string> { domain + "img/products/" + orderProduct.Product.Id + ".png" }
                             },
                             // Convert the price to cents
                             UnitAmount = (long)((orderProduct.PriceWithCoupon / orderProduct.Quantity) * 100),
