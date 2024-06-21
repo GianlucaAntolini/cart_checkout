@@ -19,9 +19,6 @@
                 @if (newsletter)
                 {
                     <span>Iscritto alla newsletter!</span><br/>
-                }else
-                {
-                    <span>Non desidero iscrivermi alla newsletter</span><br/>
                 }
                 @if (order.OrderInvoice != null)
                 {
@@ -55,7 +52,7 @@
                                 @orderProduct.Product.Name
                               </td>
                             <td class="cart-price tar">@orderProduct.Product.Price</td>
-                            <td class="cart-action cart-quantity tac">
+                            <td class="cart-action tac">
                          
                                 <span class="cart-quantity-value">@orderProduct.Quantity</span>
                            

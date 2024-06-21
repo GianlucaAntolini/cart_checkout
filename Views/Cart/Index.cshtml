@@ -26,27 +26,33 @@
                     {
                         <tr>
                             <td class="cart-action tac">
-                               <form asp-action="RemoveProduct" method="post">
+            
+                            <form asp-action="RemoveProduct" method="post">
                                 <input type="hidden" name="orderProductId" value="@orderProduct.Id" />
-                                <button type="submit" class="cart-remove">X</button>
+                                <button type="submit" class="cart-remove no-bg-button"><i class="fa fa-trash "></i></button>
                             </form>
+                        
                             </td>
                             <td class="cart-item">
                                 <img src="~/img/products/@(orderProduct.ProductId).png" alt="Product Image"  class="productImage"/>
                                 @orderProduct.Product.Name</td>
                             <td class="cart-price tar">@orderProduct.Product.Price</td>
-                            <td class="cart-action cart-quantity tac">
+                            <td class="cart-action tac">
+                                <div class="cart-quantity">
                                 <form asp-action="DecreaseProductQuantity" method="post">
                                     <input type="hidden" name="orderProductId" value="@orderProduct.Id" />
-                                    <button type="submit" class="cart-quantity-minus" @(orderProduct.Quantity <= 1 ? "disabled" : "")>-</button>
+                                    <button type="submit" class="cart-quantity-minus no-bg-button" @(orderProduct.Quantity <= 1 ? "disabled" : "")><i class="fa fa-minus"></i></button>
                                 </form>
                                 <span class="cart-quantity-value">@orderProduct.Quantity</span>
                                 <form asp-action="IncreaseProductQuantity" method="post">
                                     <input type="hidden" name="orderProductId" value="@orderProduct.Id" />
-                                    <button type="submit" class="cart-quantity-plus" 
-                                         @(products.First(p => p.Id == orderProduct.ProductId).StockQuantity <= orderProduct.Quantity ? "disabled" : "")>+</button>
+                                    <button type="submit" class="cart-quantity-plus no-bg-button" 
+                                         @(products.First(p => p.Id == orderProduct.ProductId).StockQuantity <= orderProduct.Quantity ? "disabled" : "")><i class="fa fa-plus"></i></button>  
                                 </form>
+                                </div>
                             </td>
+
+                            
                             <td class="row-total tar">
                                 <span class ="@(order.CouponId != null && orderProduct.Price != orderProduct.PriceWithCoupon ? "strike" : "")">@orderProduct.Price</span>
                                 <br />
