@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using YourNamespace.Data;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe")["SecretKey"];
 
 app.UseSession();
 

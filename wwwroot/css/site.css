@@ -124,3 +124,9 @@ form {
 .couponForm .removeCoupon {
   margin-left: 10px;
 }
+
+.couponConfirm {
+  color: red;
+  font-weight: bold;
+  font-style: italic;
+}

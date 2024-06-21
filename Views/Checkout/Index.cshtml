@@ -4,6 +4,7 @@
     ViewBag.Title = "Checkout";
     var order = ViewBag.Order as Order;
     var newsletter = ViewBag.Newsletter as bool? ?? false;
+    var paymentTypes = ViewBag.PaymentTypes as List<PaymentType> ?? new List<PaymentType>();
 }
    
    
@@ -82,9 +83,7 @@
 
                                 <br>
 
-       <div class="couponCode couponForm">
-      <span class="couponText">@order.Coupon.Code</span>
-</div>
+      <span class="couponConfirm">@order.Coupon.Code</span>
         
                             } 
                             
@@ -98,10 +97,11 @@
     <form asp-action="GoToPayment" method="post">
         <section class="payment">
           <div class="field">
-            <input type="radio" name="payment_type" value="paypal">
-            <label>Paga con Paypal</label><br/>
-            <input type="radio" name="payment_type" value="stripe">
-            <label>Paga con Stripe</label>            
+            @foreach (var paymentType in paymentTypes)
+            {
+                <input type="radio" name="payment_type" value="@paymentType.Id" @if (paymentType.Name != "Stripe") { <text>disabled</text> }>
+                <label>Paga con @paymentType.Name</label><br/>
+            }       
           </div>
           
           <div class="field field-checkbox">

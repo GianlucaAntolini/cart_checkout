@@ -266,12 +266,18 @@ namespace YourNamespace.Controllers
                 //         - set the order totalAmountWithCoupon to the sum of all orderProducts priceWithCoupon
                 //         - set the coupon active to false (TODO: maybe coupon are one time use only)
 
+
+                //TODO: chiedere a Roberto, forse ho pensato min e max del coupon in modo sbagliato:
+                // io ho pensato così: 
+                //esempio coupon sconto 10% min 20 max 100
+                // se il prezzo del prodotto*quantita è 10 non posso applicare il coupon
+                // se il prezzo è 50 allora sconto del 10% su 50 quindi di 5 quindi prezzo finale 45
+                // se il prezzo è 200 allora sconto del 10% su 100 quindi di 10 quindi prezzo finale 190 
                 foreach (var orderProduct in order.OrderProducts)
                 {
                     if (toApplyCoupon.CouponProducts.Any(cp => cp.ProductId == orderProduct.ProductId) && orderProduct.Price >= toApplyCoupon.MinPrice)
                     {
                         var toDiscountPrice = Math.Min(toApplyCoupon.MaxPrice, orderProduct.Price);
-                        //TODO: check if no price has changed because maybe he discounted it but he reached the cap and the price didn't change
                         var newPrice = orderProduct.Price - toDiscountPrice * toApplyCoupon.PercentageDiscount / 100;
                         // If the price is actually different set applied to true
                         if (newPrice != orderProduct.Price)

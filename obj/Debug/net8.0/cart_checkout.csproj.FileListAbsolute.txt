@@ -135,3 +135,5 @@ c:\Users\gianluca.antolini\Desktop\cart_checkout\bin\Debug\net8.0\runtimes\win\l
 c:\Users\gianluca.antolini\Desktop\cart_checkout\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
 c:\Users\gianluca.antolini\Desktop\cart_checkout\obj\Debug\net8.0\cart_checkout.csproj.AssemblyReference.cache
 c:\Users\gianluca.antolini\Desktop\cart_checkout\obj\Debug\net8.0\cart_che.0463523A.Up2Date
+c:\Users\gianluca.antolini\Desktop\cart_checkout\bin\Debug\net8.0\Newtonsoft.Json.dll
+c:\Users\gianluca.antolini\Desktop\cart_checkout\bin\Debug\net8.0\Stripe.net.dll
