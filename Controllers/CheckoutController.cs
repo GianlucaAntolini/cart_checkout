@@ -201,7 +201,7 @@ namespace YourNamespace.Controllers
                 var options = new Stripe.Checkout.SessionCreateOptions
                 {
                     SuccessUrl = domain + "Checkout/Success",
-                    CancelUrl = domain + "Checkout/Cancel",
+                    CancelUrl = domain + "Checkout/Error",
                     Mode = "payment",
                     CustomerEmail = order.OrderUserDetail.Email,
                     LineItems = order.OrderProducts.Select(orderProduct => new SessionLineItemOptions
