@@ -281,7 +281,7 @@ namespace YourNamespace.Controllers
                         foreach (var orderProduct in order.OrderProducts)
                         {
                             var productResult = await _productRepository.GetById(orderProduct.ProductId);
-                            if (productResult.Value is Product product)
+                            if (productResult.Result is OkObjectResult okProductResult && okProductResult.Value is Product product)
                             {
                                 product.StockQuantity -= orderProduct.Quantity;
                                 await _productRepository.Update(product.Id, product);
