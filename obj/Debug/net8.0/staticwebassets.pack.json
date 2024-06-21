@@ -269,6 +269,10 @@
       "PackagePath": "staticwebassets\\privacy.html"
     },
     {
+      "Id": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\templates\\invoice.html",
+      "PackagePath": "staticwebassets\\templates\\invoice.html"
+    },
+    {
       "Id": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\terms_and_conditions.html",
       "PackagePath": "staticwebassets\\terms_and_conditions.html"
     },

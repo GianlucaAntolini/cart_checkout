@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "aYcH2J6I0wnYEhewDcHiSopE4bXAP8/xlpfwmNxrIwg=",
+  "Hash": "1s0wa6kk6W+2am9swSFR/cLv6RlCSsz1tdt5UZeNG9s=",
   "Source": "cart_checkout",
   "BasePath": "_content/cart_checkout",
   "Mode": "Default",
@@ -1307,6 +1307,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\privacy.html"
+    },
+    {
+      "Identity": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\templates\\invoice.html",
+      "SourceId": "cart_checkout",
+      "SourceType": "Discovered",
+      "ContentRoot": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\",
+      "BasePath": "_content/cart_checkout",
+      "RelativePath": "templates/invoice.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\templates\\invoice.html"
     },
     {
       "Identity": "c:\\Users\\gianluca.antolini\\Desktop\\cart_checkout\\wwwroot\\terms_and_conditions.html",

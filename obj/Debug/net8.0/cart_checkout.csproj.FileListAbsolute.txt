@@ -137,3 +137,4 @@ c:\Users\gianluca.antolini\Desktop\cart_checkout\obj\Debug\net8.0\cart_checkout.
 c:\Users\gianluca.antolini\Desktop\cart_checkout\obj\Debug\net8.0\cart_che.0463523A.Up2Date
 c:\Users\gianluca.antolini\Desktop\cart_checkout\bin\Debug\net8.0\Newtonsoft.Json.dll
 c:\Users\gianluca.antolini\Desktop\cart_checkout\bin\Debug\net8.0\Stripe.net.dll
+c:\Users\gianluca.antolini\Desktop\cart_checkout\bin\Debug\net8.0\PuppeteerSharp.dll

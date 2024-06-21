@@ -5,6 +5,8 @@ using YourNamespace.Data.Repositories;
 using Stripe.BillingPortal;
 using Stripe.Checkout;
 using System.Reflection.Metadata.Ecma335;
+using PuppeteerSharp;
+using PuppeteerSharp.Media;
 
 namespace YourNamespace.Controllers
 {
@@ -297,7 +299,8 @@ namespace YourNamespace.Controllers
                     HttpContext.Session.Remove("OrderId");
                     // Remove the order payment id from session
                     HttpContext.Session.Remove("OrderPaymentId");
-
+                    // Set the order id in viewbag
+                    ViewBag.Order = order;
                     return View();
                 }
             }
@@ -336,6 +339,93 @@ namespace YourNamespace.Controllers
             }
 
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> InvoicePDF()
+        {
+            // I now cleared the session after the payment, so I need to get the order id from the query string
+            // Since there is no login nor register for now this is the only way to get the order id
+            int? orderId = Request.Form.ContainsKey("orderId") && int.TryParse(Request.Form["orderId"], out int castOrderId) ? castOrderId : null;
+            if (orderId == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Get the order with related entities
+            var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId.Value);
+            if (orderResult.Value is Order order)
+            {
+                // Fetch order payment with execution date from orderpaymentrepository
+                var orderPaymentResult = await _orderPaymentRepository.GetByOrderIdWithExecutionDatAndPaymentType(orderId.Value);
+                OrderPayment? orderPayment = null;
+                if (orderPaymentResult is OrderPayment queryResultOrderPayment && queryResultOrderPayment != null && queryResultOrderPayment.ExecutionDate != null)
+                {
+                    orderPayment = queryResultOrderPayment;
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+
+                var invoiceJSON = new Dictionary<string, string>
+        {
+            { "Name", order.OrderUserDetail.Name },
+            { "Surname", order.OrderUserDetail.Surname },
+            { "Nation", order.OrderUserDetail.Nation.Name },
+            { "PIVA", order.OrderInvoice.PIVA },
+            { "CF", order.OrderInvoice.CF },
+            { "Price", orderPayment.TotalAmount.ToString() },
+            { "PaymentMethod", orderPayment.PaymentType.Name },
+            { "InvoiceNumber", order.OrderInvoice.Id.ToString() },
+            { "Date", orderPayment.ExecutionDate.Value.ToString("dd/MM/yyyy") }
+        };
+
+                // Path to the HTML template
+                string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "templates", "invoice.html");
+                string htmlTemplate = await System.IO.File.ReadAllTextAsync(templatePath);
+
+                // Replace placeholders with actual data
+                string htmlContent = ReplacePlaceholders(htmlTemplate, invoiceJSON);
+
+                // Generate PDF
+                byte[] pdfBytes = await GeneratePdfFromHtml(htmlContent);
+
+                // Return the PDF file as a download
+                return File(pdfBytes, "application/pdf", "fattura.pdf");
+
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+
+        }
+
+        private static string ReplacePlaceholders(string htmlTemplate, Dictionary<string, string> data)
+        {
+            foreach (var placeholder in data)
+            {
+                htmlTemplate = htmlTemplate.Replace("{" + placeholder.Key + "}", placeholder.Value);
+            }
+            return htmlTemplate;
+        }
+
+        private static async Task<byte[]> GeneratePdfFromHtml(string htmlContent)
+        {
+            await new BrowserFetcher().DownloadAsync();
+            await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
+            await using var page = await browser.NewPageAsync();
+            await page.SetContentAsync(htmlContent);
+            return await page.PdfDataAsync(new PdfOptions
+            {
+                Format = PaperFormat.A4
+            });
+        }
+
+
+
 
 
 
