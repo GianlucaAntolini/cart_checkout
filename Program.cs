@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using YourNamespace.Data;
 using Stripe;
-
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,11 +26,25 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+// Add Identity
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
+builder.Services.AddIdentityCore<User>()
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddApiEndpoints()
+.AddDefaultTokenProviders();
+
+
 // Add swagger
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "Cart Checkout", Version = "v1" });
 });
+
+
+
+
 
 var app = builder.Build();
 
@@ -51,7 +65,12 @@ StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe")["SecretK
 
 app.UseSession();
 
+app.UseAuthentication();
+
+app.MapIdentityApi<User>();
+
 app.UseAuthorization();
+
 
 app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Cart Checkout v1"));

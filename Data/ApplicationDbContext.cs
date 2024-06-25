@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using YourNamespace.Models;
 
 namespace YourNamespace.Data
 {
-	public class ApplicationDbContext : DbContext
+	public class ApplicationDbContext : IdentityDbContext<User>
 	{
 		protected readonly IConfiguration Configuration;
 
@@ -29,9 +30,12 @@ namespace YourNamespace.Data
 		public DbSet<OrderUserDetail> OrderUserDetails { get; set; }
 		public DbSet<NewsletterSubscription> NewsletterSubscriptions { get; set; }
 		public DbSet<Nation> Nations { get; set; }
+
 		// Foreign keys, indexes and default constraints
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			base.OnModelCreating(modelBuilder);
+
 			// Order can have one Coupon
 			modelBuilder.Entity<Order>()
 				.HasOne(o => o.Coupon)
@@ -106,9 +110,6 @@ namespace YourNamespace.Data
 				.HasOne(cp => cp.Product)
 				.WithMany()
 				.HasForeignKey(cp => cp.ProductId);
-
-
-
 
 
 		}
