@@ -7,6 +7,9 @@ using PuppeteerSharp.Media;
 
 namespace YourNamespace.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
+
     public class CartController : Controller
     {
         private readonly IUnitOfwork _unitOfWork;
@@ -26,6 +29,9 @@ namespace YourNamespace.Controllers
             _orderRepository = new OrderRepository(_unitOfWork);
             _couponRepository = new CouponRepository(_unitOfWork);
         }
+
+        [HttpGet]
+        [ApiExplorerSettings(IgnoreApi = true)]
 
         public async Task<IActionResult> Index()
         {
@@ -130,11 +136,17 @@ namespace YourNamespace.Controllers
             return View();
         }
 
+        // give me the command to create a migration
 
 
-        [HttpPost]
-        public async Task<IActionResult> RemoveProduct(int orderProductId)
+
+        [HttpPost("RemoveProduct")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public async Task<IActionResult> RemoveProduct()
+
         {
+            // Get orderProductId from the form
+            int orderProductId = int.TryParse(Request.Form["orderProductId"], out int result) ? result : 0;
             // Get the order id from the session else redirect to the index to create a new order
             int orderId = HttpContext.Session.GetInt32("OrderId") ?? 0;
             if (orderId == 0)
@@ -158,9 +170,17 @@ namespace YourNamespace.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> IncreaseProductQuantity(int orderProductId)
+
+
+
+        [HttpPost("IncreaseProductQuantity")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public async Task<IActionResult> IncreaseProductQuantity()
+
         {
+            // Get orderProductId from the form
+            int orderProductId = int.TryParse(Request.Form["orderProductId"], out int result) ? result : 0;
+
             // Get the order id from the session else redirect to the index to create a new order
             int orderId = HttpContext.Session.GetInt32("OrderId") ?? 0;
             if (orderId == 0)
@@ -190,9 +210,13 @@ namespace YourNamespace.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> DecreaseProductQuantity(int orderProductId)
+        [HttpPost("DecreaseProductQuantity")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+
+        public async Task<IActionResult> DecreaseProductQuantity()
         {
+            // Get orderProductId from the form
+            int orderProductId = int.TryParse(Request.Form["orderProductId"], out int result) ? result : 0;
             // Get the order id from the session else redirect to the index to create a new order
             int orderId = HttpContext.Session.GetInt32("OrderId") ?? 0;
             if (orderId == 0)
@@ -320,10 +344,19 @@ namespace YourNamespace.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("ApplyCoupon")]
+        [ApiExplorerSettings(IgnoreApi = true)]
 
-        public async Task<IActionResult> ApplyCoupon(string couponCode)
+
+        public async Task<IActionResult> ApplyCoupon()
         {
+            // Get the coupon code from the form
+            string? couponCode = Request.Form["couponCode"];
+            if (couponCode == null || couponCode == "")
+            {
+                return RedirectToAction("Index");
+            }
+
             // Get the order id from the session else redirect to the index to create a new order
             int orderId = HttpContext.Session.GetInt32("OrderId") ?? 0;
             if (orderId == 0)
@@ -345,7 +378,9 @@ namespace YourNamespace.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("RemoveCoupon")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+
         public async Task<IActionResult> RemoveCoupon()
         {
             // Get the order id from the session else redirect to the index to create a new order
@@ -365,7 +400,9 @@ namespace YourNamespace.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
+        [HttpPost("UserInfo")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+
         public async Task<IActionResult> UserInfoAsync()
         {
             // Redirect to the UserInfo page only if there is at least one product in the order
