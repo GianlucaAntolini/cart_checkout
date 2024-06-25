@@ -4,13 +4,13 @@ namespace YourNamespace.ViewModels;
 
 public class LoginVM
 {
-    [Required(ErrorMessage = "Username is required.")]
+    [Required(ErrorMessage = "Email obbligatoria.")]
     public string? Username { get; set; }
 
-    [Required(ErrorMessage = "Password is required.")]
+    [Required(ErrorMessage = "Password obbligatoria.")]
     [DataType(DataType.Password)]
     public string? Password { get; set; }
 
-    [Display(Name = "Remember Me")]
+    [Display(Name = "Ricordami")]
     public bool RememberMe { get; set; }
 }

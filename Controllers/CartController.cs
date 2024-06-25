@@ -2,8 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using YourNamespace.Models;
 
 using YourNamespace.Data.Repositories;
-using PuppeteerSharp;
-using PuppeteerSharp.Media;
+using Microsoft.AspNetCore.Identity;
 
 namespace YourNamespace.Controllers
 {
@@ -20,14 +19,20 @@ namespace YourNamespace.Controllers
 
         private readonly CouponRepository _couponRepository;
 
+        private readonly UserRepository _userRepository;
 
-        public CartController(IUnitOfwork unitOfwork)
+        private readonly SignInManager<User> signInManager;
+
+
+        public CartController(IUnitOfwork unitOfwork, SignInManager<User> signInManage)
         {
             _unitOfWork = unitOfwork;
             _productRepository = new ProductRepository(_unitOfWork);
             _orderProductRepository = new OrderProductRepository(_unitOfWork);
             _orderRepository = new OrderRepository(_unitOfWork);
             _couponRepository = new CouponRepository(_unitOfWork);
+            _userRepository = new UserRepository(_unitOfWork);
+            signInManager = signInManage;
         }
 
         [HttpGet]
@@ -35,6 +40,11 @@ namespace YourNamespace.Controllers
 
         public async Task<IActionResult> Index()
         {
+            // if user is not logged in redirect to the login page (use signInManager.IsSignedIn(User) to check if the user is logged in)
+            if (signInManager.IsSignedIn(User) == false)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
 
             // Retrieve all products to display in the dropdown menu
@@ -45,6 +55,8 @@ namespace YourNamespace.Controllers
                 products = productsResult.Value.ToList();
             }
             var order = new Order();
+
+
 
             // First check if in the session there is an order id, if there is fetch the order from the database, else create new and save the id in the session
             int orderId = 0;

@@ -10,6 +10,14 @@
 
     <div class="page-container">
         <h3>Carrello</h3>
+        @if (order == null || order.OrderProducts == null || order.OrderProducts.Count == 0)
+        {
+            <p>Il carrello è vuoto</p>
+             <form asp-action="CreateOrder" method="post">
+            <button type="submit">Aggiungi Prodotti</button>
+        </form>
+        }
+
         <section class="cart-items">
             <table class="cart-items">
                 <thead>

@@ -31,10 +31,23 @@ namespace YourNamespace.Data
 		public DbSet<NewsletterSubscription> NewsletterSubscriptions { get; set; }
 		public DbSet<Nation> Nations { get; set; }
 
+		public DbSet<UserOrder> UserOrders { get; set; }
+
 		// Foreign keys, indexes and default constraints
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
+			// User has many UserOrders
+			modelBuilder.Entity<User>()
+				.HasMany(u => u.UserOrders)
+				.WithOne(uo => uo.User)
+				.HasForeignKey(uo => uo.UserId);
+
+			//UserOrder has one Order
+			modelBuilder.Entity<UserOrder>()
+			.HasOne(uo => uo.Order)
+			.WithMany()
+			.HasForeignKey(uo => uo.OrderId);
 
 			// Order can have one Coupon
 			modelBuilder.Entity<Order>()
