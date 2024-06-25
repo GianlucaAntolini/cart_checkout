@@ -11,12 +11,6 @@
         <p>
           Il tuo ordine si è concluso con successo!
         </p>
-        @if (order != null && order.OrderInvoice != null)
-        {
-            <form asp-action="InvoicePDF" method="post">
-                <input type="hidden" name="orderId" value="@order.Id" />
-                <button type="submit" class="button">Scarica fattura</button>
-            </form>
-        }  
+     
       </section>
     </div>

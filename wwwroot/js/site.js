@@ -55,7 +55,7 @@ if (currentPage == "Cart") {
 
           if (!response.ok) {
             console.error("Failed to remove product:", response.statusText);
-            window.location.reload(true);
+            return;
           }
 
           const result = await response.json();

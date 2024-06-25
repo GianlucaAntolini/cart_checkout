@@ -1,15 +1,20 @@
    @using YourNamespace.Models;
 @model Product
 @{
-    ViewBag.Title = "Checkout";
-    var order = ViewBag.Order as Order;
+    ViewBag.Title = "I miei ordini";
+    var orders = ViewBag.Orders as List<Order>;
     var newsletter = ViewBag.Newsletter as bool? ?? false;
     var paymentTypes = ViewBag.PaymentTypes as List<PaymentType> ?? new List<PaymentType>();
 }
    
    
     <div class="page-container">
-      <h3>Checkout</h3>
+      <h3>I miei ordini</h3>
+      @foreach (var order in orders){
+        <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+        <section class="order">
+          <h4>Ordine @order.Id</h4>
+        </section>
       <section class="user-info">
         <h4>Riepilogo dati personali</h4>
         <div>
@@ -25,7 +30,12 @@
                     <span>Richiedo fattura</span><br/>
                     <span>- @order.OrderInvoice.CF<br/></span>
                    <span> - @order.OrderInvoice.PIVA<br/></span>
-      
+                   
+            <form asp-action="InvoicePDF" method="post">
+                <input type="hidden" name="orderId" value="@order.Id" />
+                <button type="submit" class="button">Scarica fattura</button>
+            </form>
+        
                 }
         </div>
       </section>
@@ -97,26 +107,7 @@
                 </tfoot>
             </table>
       </section>
-    <form asp-action="GoToPayment" method="post">
-        <section class="payment">
-          <div class="field">
-            @foreach (var paymentType in paymentTypes)
-            {
-                <input type="radio" name="payment_type" value="@paymentType.Id" @if (paymentType.Name != "Stripe") { <text>disabled</text> }>
-                <label>Paga con @paymentType.Name</label><br/>
-            }       
-          </div>
-          
-          <div class="field field-checkbox">
-            <label>Ho letto e accetto le <a href="./terms_and_conditions.html" target="_blank">condizioni generali di vendita</a></label>
-            <input type="checkbox" name="terms_and_conditions" />
-          </div>
-          
-        </section>
+      </div>
+      }
 
-        <section>
-           <button type="submit" name="action" class="button">Indietro</button>
-            <button type="submit" name="action" class="button" value="continue">Procedi</button>
-        </section>
-      </form>
     </div>

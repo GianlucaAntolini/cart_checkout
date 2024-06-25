@@ -13,9 +13,13 @@ namespace YourNamespace.Data.Repositories
 
         public async Task<ActionResult<UserOrder>> GetLatestOrderOfUserByUserId(string userId)
         {
-            // no need to include anything else, as we are only interested in the userorder itself (the one with the highest order id for the user)
             return await dbSet.OrderByDescending(uo => uo.Id).FirstOrDefaultAsync(uo => uo.UserId == userId);
         }
 
+
+        public async Task<ActionResult<IEnumerable<UserOrder>>> GetAllByUserId(string userId)
+        {
+            return await dbSet.Where(uo => uo.UserId == userId).ToListAsync();
+        }
     }
 }

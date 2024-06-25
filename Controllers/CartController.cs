@@ -188,6 +188,11 @@ namespace YourNamespace.Controllers
         [HttpPost("RemoveProduct")]
         public async Task<IActionResult> RemoveProduct([FromBody] RemoveProductRequest request)
         {
+            // If user is not logged in return unauthorized
+            if (_signInManager.IsSignedIn(User) == false)
+            {
+                return Unauthorized();
+            }
             // Validate input
             if (request.OrderProductId <= 0)
             {
@@ -213,7 +218,7 @@ namespace YourNamespace.Controllers
                     await UpdateOrderPriceAsync(order, null);
 
                     // Return success response
-                    return Ok(new { message = "Product removed successfully", order });
+                    return Ok(new { message = "Product removed successfully", order.Id });
                 }
                 else
                 {
