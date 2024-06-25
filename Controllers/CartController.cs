@@ -186,7 +186,7 @@ namespace YourNamespace.Controllers
 
 
         [HttpPost("RemoveProduct")]
-        public async Task<IActionResult> RemoveProduct([FromBody] RemoveProductRequest request)
+        public async Task<IActionResult> RemoveProduct([FromBody] CartEditRequest request)
         {
             // If user is not logged in return unauthorized
             if (_signInManager.IsSignedIn(User) == false)
@@ -231,7 +231,7 @@ namespace YourNamespace.Controllers
             }
         }
 
-        public class RemoveProductRequest
+        public class CartEditRequest
         {
             public int OrderProductId { get; set; }
         }
@@ -240,30 +240,39 @@ namespace YourNamespace.Controllers
 
 
         [HttpPost("IncreaseProductQuantity")]
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public async Task<IActionResult> IncreaseProductQuantity()
 
+        public async Task<IActionResult> IncreaseProductQuantity([FromBody] CartEditRequest request)
         {
-            // Get orderProductId from the form
-            int orderProductId = int.TryParse(Request.Form["orderProductId"], out int result) ? result : 0;
 
-            // Get the order id from the session else redirect to the index to create a new order
+
+            // If user is not logged in return unauthorized
+            if (_signInManager.IsSignedIn(User) == false)
+            {
+                return Unauthorized();
+            }
+            // Validate input
+            if (request.OrderProductId <= 0)
+            {
+                return BadRequest("Invalid OrderProductId");
+            }
+
+            // Get the order id from the session else return bad request
             int orderId = HttpContext.Session.GetInt32("OrderId") ?? 0;
             if (orderId == 0)
             {
-                return RedirectToAction("Index");
+                return BadRequest("Order not found in session");
             }
 
             var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
             if (orderResult.Value is Order order)
             {
-                var orderProduct = order.OrderProducts.FirstOrDefault(op => op.Id == orderProductId);
+                var orderProduct = order.OrderProducts.FirstOrDefault(op => op.Id == request.OrderProductId);
                 if (orderProduct != null)
                 {
                     // If the user is trying to be sneaky and increase the quantity of a product that is already the stock quantity, just return to the index
                     if (orderProduct.Quantity == orderProduct.Product.StockQuantity)
                     {
-                        return RedirectToAction("Index");
+                        return BadRequest("Product quantity already at maximum");
                     }
                     orderProduct.Quantity++;
                     orderProduct.Price = orderProduct.Product.Price * orderProduct.Quantity;
@@ -271,41 +280,52 @@ namespace YourNamespace.Controllers
                     order.TotalAmountWithCoupon += orderProduct.Price;
                     await UpdateOrderPriceAsync(order, null);
                 }
+                else
+                {
+                    return NotFound("OrderProduct not found");
+                }
+
+                return Ok(new { message = "Product quantity increased successfully", order.Id });
+
+            }
+            else
+            {
+                return NotFound("Order not found");
             }
 
-            return RedirectToAction("Index");
         }
 
         [HttpPost("DecreaseProductQuantity")]
-        [ApiExplorerSettings(IgnoreApi = true)]
-
-        public async Task<IActionResult> DecreaseProductQuantity()
+        public async Task<IActionResult> DecreaseProductQuantity([FromBody] CartEditRequest request)
         {
-            // Get orderProductId from the form
-            int orderProductId = int.TryParse(Request.Form["orderProductId"], out int result) ? result : 0;
-            // Get the order id from the session else redirect to the index to create a new order
+            // If user is not logged in return unauthorized
+            if (_signInManager.IsSignedIn(User) == false)
+            {
+                return Unauthorized();
+            }
+            // Validate input
+            if (request.OrderProductId <= 0)
+            {
+                return BadRequest("Invalid OrderProductId");
+            }
+
+            // Get the order id from the session else return bad request
             int orderId = HttpContext.Session.GetInt32("OrderId") ?? 0;
             if (orderId == 0)
             {
-                return RedirectToAction("Index");
+                return BadRequest("Order not found in session");
             }
-
-
 
             var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
             if (orderResult.Value is Order order)
             {
-                var orderProduct = order.OrderProducts.FirstOrDefault(op => op.Id == orderProductId);
-
-
-
-
+                var orderProduct = order.OrderProducts.FirstOrDefault(op => op.Id == request.OrderProductId);
                 if (orderProduct != null)
                 {
                     // If the user is trying to be sneaky and decrease the quantity of a product that is already 1, just return to the index
                     if (orderProduct.Quantity == 1)
                     {
-                        return RedirectToAction("Index");
+                        return BadRequest("Product quantity already at minimum");
                     }
                     orderProduct.Quantity--;
                     orderProduct.Price = orderProduct.Product.Price * orderProduct.Quantity;
@@ -313,9 +333,18 @@ namespace YourNamespace.Controllers
                     order.TotalAmountWithCoupon -= orderProduct.Price;
                     await UpdateOrderPriceAsync(order, null);
                 }
-            }
+                else
+                {
+                    return NotFound("OrderProduct not found");
+                }
 
-            return RedirectToAction("Index");
+                return Ok(new { message = "Product quantity decreased successfully", order.Id });
+
+            }
+            else
+            {
+                return NotFound("Order not found");
+            }
         }
 
         private void resetOrderPrice(Order order)

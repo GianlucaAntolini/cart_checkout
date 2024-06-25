@@ -70,4 +70,93 @@ if (currentPage == "Cart") {
       });
     });
   });
+
+  const increaseProductQuantityButtons = document.querySelectorAll(
+    ".cart-quantity-plus"
+  );
+  increaseProductQuantityButtons.forEach((button) => {
+    button.addEventListener("click", async function () {
+      const orderProductId = this.getAttribute("data-order-product-id");
+
+      // Make sure the orderProductId is valid
+      if (!orderProductId) {
+        console.error("Invalid OrderProductId");
+        return;
+      }
+
+      try {
+        const response = await fetch("/Cart/IncreaseProductQuantity", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ orderProductId: parseInt(orderProductId) }),
+        });
+
+        console.log("Response:", response);
+
+        if (!response.ok) {
+          console.error(
+            "Failed to increase product quantity:",
+            response.statusText
+          );
+          return;
+        }
+
+        const result = await response.json();
+        console.log("Product quantity increased successfully:", result);
+
+        // Optionally, you can refresh the page or update the UI to reflect changes
+        // force page reload
+        window.location.reload(true);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    });
+  });
+
+  const decreaseProductQuantityButtons = document.querySelectorAll(
+    ".cart-quantity-minus"
+  );
+
+  decreaseProductQuantityButtons.forEach((button) => {
+    button.addEventListener("click", async function () {
+      const orderProductId = this.getAttribute("data-order-product-id");
+
+      // Make sure the orderProductId is valid
+      if (!orderProductId) {
+        console.error("Invalid OrderProductId");
+        return;
+      }
+
+      try {
+        const response = await fetch("/Cart/DecreaseProductQuantity", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ orderProductId: parseInt(orderProductId) }),
+        });
+
+        console.log("Response:", response);
+
+        if (!response.ok) {
+          console.error(
+            "Failed to decrease product quantity:",
+            response.statusText
+          );
+          return;
+        }
+
+        const result = await response.json();
+        console.log("Product quantity decreased successfully:", result);
+
+        // Optionally, you can refresh the page or update the UI to reflect changes
+        // force page reload
+        window.location.reload(true);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    });
+  });
 }

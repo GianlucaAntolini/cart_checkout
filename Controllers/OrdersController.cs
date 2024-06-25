@@ -108,7 +108,7 @@ namespace YourNamespace.Controllers
 
 
 
-        [HttpPost("InvoicePDF")]
+        [HttpPost]
         public async Task<IActionResult> InvoicePDF()
         {
             // I now cleared the session after the payment, so I need to get the order id from the query string
