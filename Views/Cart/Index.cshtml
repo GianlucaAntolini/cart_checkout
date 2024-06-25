@@ -35,10 +35,8 @@
                         <tr>
                             <td class="cart-action tac">
             
-                            <form asp-action="RemoveProduct" method="post">
-                                <input type="hidden" name="orderProductId" value="@orderProduct.Id" />
-                                <button type="submit" class="cart-remove no-bg-button"><i class="fa fa-trash "></i></button>
-                            </form>
+                                       <button type="button" class="no-bg-button remove-product-btn" data-order-product-id="@orderProduct.Id"><i class="fa fa-trash "></i></button>
+
                         
                             </td>
                             <td class="cart-item">
@@ -123,3 +121,5 @@
 
 </section>
     </div>
+
+

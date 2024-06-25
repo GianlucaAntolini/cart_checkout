@@ -19,20 +19,28 @@ namespace YourNamespace.Controllers
 
         private readonly CouponRepository _couponRepository;
 
-        private readonly UserRepository _userRepository;
+        private readonly UserOrderRepository _userOrderRepository;
 
-        private readonly SignInManager<User> signInManager;
+        private readonly OrderPaymentRepository _orderPaymentRepository;
 
 
-        public CartController(IUnitOfwork unitOfwork, SignInManager<User> signInManage)
+        private readonly SignInManager<User> _signInManager;
+
+        private readonly UserManager<User> _userManager;
+
+
+        public CartController(IUnitOfwork unitOfwork, SignInManager<User> signInManager, UserManager<User> userManager)
         {
             _unitOfWork = unitOfwork;
             _productRepository = new ProductRepository(_unitOfWork);
             _orderProductRepository = new OrderProductRepository(_unitOfWork);
             _orderRepository = new OrderRepository(_unitOfWork);
             _couponRepository = new CouponRepository(_unitOfWork);
-            _userRepository = new UserRepository(_unitOfWork);
-            signInManager = signInManage;
+            _userOrderRepository = new UserOrderRepository(_unitOfWork);
+            _orderPaymentRepository = new OrderPaymentRepository(_unitOfWork);
+            _signInManager = signInManager;
+            _userManager = userManager;
+
         }
 
         [HttpGet]
@@ -41,7 +49,7 @@ namespace YourNamespace.Controllers
         public async Task<IActionResult> Index()
         {
             // if user is not logged in redirect to the login page (use signInManager.IsSignedIn(User) to check if the user is logged in)
-            if (signInManager.IsSignedIn(User) == false)
+            if (_signInManager.IsSignedIn(User) == false)
             {
                 return RedirectToAction("Login", "Account");
             }
@@ -54,21 +62,38 @@ namespace YourNamespace.Controllers
             {
                 products = productsResult.Value.ToList();
             }
-            var order = new Order();
+            Order? order = null;
 
+            // Check last order of the user in the database
+            var orderFound = false;
+            int orderId = 0;
+
+            var latestOrder = await _userOrderRepository.GetLatestOrderOfUserByUserId(_userManager.GetUserId(User));
+            if (latestOrder.Value is UserOrder foundUserOrder)
+            {
+                // Check if the order has not been paid yet
+                var hasOrderBeenPaid = await _orderPaymentRepository.HasOrderBeenPaidByOrderId(foundUserOrder.OrderId);
+                if (hasOrderBeenPaid.Value == false)
+                {
+                    orderId = foundUserOrder.OrderId;
+                    orderFound = true;
+                }
+            }
 
 
             // First check if in the session there is an order id, if there is fetch the order from the database, else create new and save the id in the session
-            int orderId = 0;
-            if (HttpContext.Session.GetInt32("OrderId") != null)
+            if (orderFound)
             {
-                orderId = (int)HttpContext.Session.GetInt32("OrderId");
+
                 var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
                 // If the order is found put it in the order variable (the order is inside orderResult->Result->Value)
-                if (orderResult.Value is Order foundOrder)
+                if (orderResult.Value is Order queryOrder)
                 {
-                    order = foundOrder;
+                    order = queryOrder;
+                    // set the order id in the session
+                    HttpContext.Session.SetInt32("OrderId", order.Id);
                 }
+
                 // write to console orderResult.toString()
                 Console.WriteLine(orderResult.ToString());
 
@@ -107,6 +132,16 @@ namespace YourNamespace.Controllers
 
                 // save the order in the database
                 await _orderRepository.Create(order);
+
+                // insert the tuple in the userorder table
+                var UserOrder = new UserOrder
+                {
+                    OrderId = orderId,
+                    UserId = _userManager.GetUserId(User)
+                };
+
+                await _userOrderRepository.Create(UserOrder);
+
 
 
                 // for each product add one order product to the order
@@ -148,38 +183,52 @@ namespace YourNamespace.Controllers
             return View();
         }
 
-        // give me the command to create a migration
-
 
 
         [HttpPost("RemoveProduct")]
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public async Task<IActionResult> RemoveProduct()
-
+        public async Task<IActionResult> RemoveProduct([FromBody] RemoveProductRequest request)
         {
-            // Get orderProductId from the form
-            int orderProductId = int.TryParse(Request.Form["orderProductId"], out int result) ? result : 0;
-            // Get the order id from the session else redirect to the index to create a new order
+            // Validate input
+            if (request.OrderProductId <= 0)
+            {
+                return BadRequest("Invalid OrderProductId");
+            }
+
+            // Get the order id from the session else return bad request
             int orderId = HttpContext.Session.GetInt32("OrderId") ?? 0;
             if (orderId == 0)
             {
-                return RedirectToAction("Index");
+                return BadRequest("Order not found in session");
             }
 
             var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
             if (orderResult.Value is Order order)
             {
-                var orderProduct = order.OrderProducts.FirstOrDefault(op => op.Id == orderProductId);
+                var orderProduct = order.OrderProducts.FirstOrDefault(op => op.Id == request.OrderProductId);
                 if (orderProduct != null)
                 {
                     order.OrderProducts.Remove(orderProduct);
                     order.TotalAmount -= orderProduct.Price * orderProduct.Quantity;
                     order.TotalAmountWithCoupon -= orderProduct.Price * orderProduct.Quantity;
                     await UpdateOrderPriceAsync(order, null);
+
+                    // Return success response
+                    return Ok(new { message = "Product removed successfully", order });
+                }
+                else
+                {
+                    return NotFound("OrderProduct not found");
                 }
             }
+            else
+            {
+                return NotFound("Order not found");
+            }
+        }
 
-            return RedirectToAction("Index");
+        public class RemoveProductRequest
+        {
+            public int OrderProductId { get; set; }
         }
 
 
@@ -437,11 +486,54 @@ namespace YourNamespace.Controllers
             return RedirectToAction("Index", "UserInfo");
         }
 
+        [HttpPost("CreateOrder")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public async Task<IActionResult> CreateOrder()
+        {
+            // Get the order id from the session else redirect to the index to create a new order
+            int orderId = HttpContext.Session.GetInt32("OrderId") ?? 0;
+            if (orderId == 0)
+            {
+                return RedirectToAction("Index");
+            }
+
+            var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
+            if (orderResult.Value is Order order)
+            {
+                // Add 1 of each available product to the order
+                var productsResult = await _productRepository.GetAvailableProducts();
+                var products = new List<Product>();
+                if (productsResult.Value != null)
+                {
+                    products = productsResult.Value.ToList();
+                }
+                foreach (var product in products)
+                {
+                    order.OrderProducts.Add(new OrderProduct
+                    {
+                        ProductId = product.Id,
+                        Quantity = 1,
+                        Price = product.Price,
+                        PriceWithCoupon = product.Price,
+                        Product = product
+                    });
+
+                    order.TotalAmount += product.Price;
+                    order.TotalAmountWithCoupon += product.Price;
+                }
+
+                // Update the order in the database
+                await _orderRepository.Update(orderId, order);
+            }
+
+            return RedirectToAction("Index");
 
 
 
 
 
+
+        }
     }
 
 

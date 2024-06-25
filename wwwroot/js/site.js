@@ -26,3 +26,48 @@ if (currentPage == "UserInfo") {
     toggleFiscalFields();
   });
 }
+if (currentPage == "Cart") {
+  document.addEventListener("DOMContentLoaded", function () {
+    const removeProductButtons = document.querySelectorAll(
+      ".remove-product-btn"
+    );
+
+    removeProductButtons.forEach((button) => {
+      button.addEventListener("click", async function () {
+        const orderProductId = this.getAttribute("data-order-product-id");
+
+        // Make sure the orderProductId is valid
+        if (!orderProductId) {
+          console.error("Invalid OrderProductId");
+          return;
+        }
+
+        try {
+          const response = await fetch("/Cart/RemoveProduct", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ orderProductId: parseInt(orderProductId) }),
+          });
+
+          console.log("Response:", response);
+
+          if (!response.ok) {
+            console.error("Failed to remove product:", response.statusText);
+            window.location.reload(true);
+          }
+
+          const result = await response.json();
+          console.log("Product removed successfully:", result);
+
+          // Optionally, you can refresh the page or update the UI to reflect changes
+          // force page reload
+          window.location.reload(true);
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      });
+    });
+  });
+}

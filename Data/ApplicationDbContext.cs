@@ -49,6 +49,7 @@ namespace YourNamespace.Data
 			.WithMany()
 			.HasForeignKey(uo => uo.OrderId);
 
+
 			// Order can have one Coupon
 			modelBuilder.Entity<Order>()
 				.HasOne(o => o.Coupon)

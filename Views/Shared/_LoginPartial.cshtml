@@ -6,12 +6,15 @@
     {
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                @User.Identity!.Name!
+                @User.Identity!.Name
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li>
                     <a class="dropdown-item" asp-action="Logout" asp-controller="Account">
                         Logout
+                    </a>
+                    <a class="dropdown-item" asp-action="MyOrders" asp-controller="OrdersController">
+                        I miei ordini
                     </a>
                 </li>
             </ul>

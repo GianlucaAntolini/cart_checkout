@@ -15,5 +15,8 @@ namespace YourNamespace.Data.Repositories
         {
             return await dbSet.Include(o => o.OrderProducts).ThenInclude(op => op.Product).Include(o => o.Coupon).ThenInclude(c => c.CouponProducts).ThenInclude(cp => cp.Product).Include(o => o.OrderUserDetail).ThenInclude(oud => oud.Nation).Include(o => o.OrderInvoice).FirstOrDefaultAsync(o => o.Id == id);
         }
+
+
+
     }
 }
