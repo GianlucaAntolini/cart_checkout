@@ -1,113 +1,123 @@
-   @using YourNamespace.Models;
+@using YourNamespace.Models;
 @model Product
 @{
-    ViewBag.Title = "I miei ordini";
-    var orders = ViewBag.Orders as List<Order>;
-    var newsletter = ViewBag.Newsletter as bool? ?? false;
-    var paymentTypes = ViewBag.PaymentTypes as List<PaymentType> ?? new List<PaymentType>();
+  ViewBag.Title = "I miei ordini";
+  var orders = ViewBag.Orders as List<Order>;
+  var newsletter = ViewBag.Newsletter as bool? ?? false;
+  var paymentTypes = ViewBag.PaymentTypes as List<PaymentType> ?? new List<PaymentType>();
 }
-   
-   
-    <div class="page-container">
-      <h3>I miei ordini</h3>
-      @foreach (var order in orders){
-        <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-        <section class="order">
-          <h4>Ordine @order.Id</h4>
-        </section>
+
+
+<div class="page-container">
+  <h3>I miei ordini</h3>
+  @foreach (var order in orders)
+  {
+    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;" data-aos="fade-in" data-aos-duration="500">
+      <section class="order">
+        <h4>Ordine @order.Id</h4>
+      </section>
       <section class="user-info">
         <h4>Riepilogo dati personali</h4>
         <div>
-           @order.OrderUserDetail.Name @order.OrderUserDetail.Surname<br/>
-             @order.OrderUserDetail.Email<br/>
-             @order.OrderUserDetail.Nation.Name<br/><br/>
-                @if (newsletter)
-                {
-                    <span>Iscritto alla newsletter!</span><br/>
-                }
-                @if (order.OrderInvoice != null)
-                {
-                    <span>Richiedo fattura</span><br/>
-                    <span>- @order.OrderInvoice.CF<br/></span>
-                    <span>- @order.OrderInvoice.PIVA<br/></span>
-                   
+          @order.OrderUserDetail.Name @order.OrderUserDetail.Surname<br />
+          @order.OrderUserDetail.Email<br />
+          @order.OrderUserDetail.Nation.Name<br /><br />
+          @if (newsletter)
+          {
+            <span>Iscritto alla newsletter!</span>
 
-<button type="button" class="button" onclick="window.location.href='@Url.Action("InvoicePDF", "Orders", new { orderId = @order.Id })'">Scarica fattura</button>
+            <br />
+          }
+          @if (order.OrderInvoice != null)
+          {
+            <span>Richiedo fattura</span>
 
-        
-        
-                }
+            <br />
+            <span>- @order.OrderInvoice.CF<br /></span>
+            <span>- @order.OrderInvoice.PIVA<br /></span>
+
+
+            <button type="button" class="button"
+              onclick="window.location.href='@Url.Action("InvoicePDF", "Orders", new { orderId = @order.Id })'">Scarica
+              fattura</button>
+
+
+
+          }
         </div>
       </section>
-      
+
       <section class="cart-items">
         <h4>Riepilogo carrello</h4>
         <table class="cart-items">
-                <thead>
-                    <tr>
-                        <th>Prodotto</th>
-                        <th>Prezzo</th>
-                        <th>Quantità</th>
-                        <th>Totale</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var orderProduct in order.OrderProducts)
-                    {
-                        <tr>
-                  
-                            
-                            
-                            <td class="cart-item">
-                                <img src="~/img/products/@(orderProduct.ProductId).png" alt="Product Image"  class="productImage"/>
-                                @orderProduct.Product.Name
-                              </td>
-                            <td class="cart-price tar">@orderProduct.Product.Price</td>
-                            <td class="cart-action tac">
-                         
-                                <span class="cart-quantity-value">@orderProduct.Quantity</span>
-                           
-                            </td>
-                            <td class="row-total tar">
-                                <span class ="@(order.CouponId != null && orderProduct.Price != orderProduct.PriceWithCoupon ? "strike" : "")">@orderProduct.Price</span>
-                                <br />
-                                @if (order.CouponId != null && orderProduct.Price != orderProduct.PriceWithCoupon)
-                                {
-                                <span>@orderProduct.PriceWithCoupon</span>
-                                }
-                                </td>
-                        </tr>
-                    }
+          <thead>
+            <tr>
+              <th>Prodotto</th>
+              <th>Prezzo</th>
+              <th>Quantità</th>
+              <th>Totale</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (var orderProduct in order.OrderProducts)
+            {
+              <tr>
 
 
-                    
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="3">&nbsp;</td>
-                        <td class="cart-total tar">
-                           <span  class = "@(order.CouponId != null && order.TotalAmount != order.TotalAmountWithCoupon ? "strike" : "")"> @order.TotalAmount</span>
-                            @if (order.CouponId != null && order.TotalAmount != order.TotalAmountWithCoupon)
-                            {
-                                <br />
-                                <span class="discountPercentage">- @order.Coupon.PercentageDiscount.ToString().Split('.')[0]%</span>
-                                <br />
-                                <span>@order.TotalAmountWithCoupon</span>
 
-                                <br>
+                <td class="cart-item">
+                  <img src="~/img/products/@(orderProduct.ProductId).png" alt="Product Image" class="productImage" />
+                  @orderProduct.Product.Name
+                </td>
+                <td class="cart-price tar">@orderProduct.Product.Price</td>
+                <td class="cart-action tac">
 
-      <span class="couponConfirm">@order.Coupon.Code</span>
-        
-                            } 
-                            
-                                                       
-                            </td>
-                    </tr>
+                  <span class="cart-quantity-value">@orderProduct.Quantity</span>
 
-                </tfoot>
-            </table>
+                </td>
+                <td class="row-total tar">
+                  <span
+                    class="@(order.CouponId != null && orderProduct.Price != orderProduct.PriceWithCoupon ? "strike" : "")">@orderProduct.Price</span>
+                  <br />
+                  @if (order.CouponId != null && orderProduct.Price != orderProduct.PriceWithCoupon)
+                  {
+                    <span>@orderProduct.PriceWithCoupon</span>
+                  }
+                </td>
+              </tr>
+            }
+
+
+
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3">&nbsp;</td>
+              <td class="cart-total tar">
+                <span
+                  class="@(order.CouponId != null && order.TotalAmount != order.TotalAmountWithCoupon ? "strike" : "")">
+                  @order.TotalAmount</span>
+                @if (order.CouponId != null && order.TotalAmount != order.TotalAmountWithCoupon)
+                {
+                  <br />
+                  <span class="discountPercentage">- @order.Coupon.PercentageDiscount.ToString().Split('.')[0]%</span>
+                  <br />
+                  <span>@order.TotalAmountWithCoupon</span>
+
+                  <br>
+
+                  <span class="couponConfirm">@order.Coupon.Code</span>
+
+                }
+
+
+              </td>
+            </tr>
+
+          </tfoot>
+        </table>
       </section>
-      </div>
-      }
-
     </div>
+  }
+
+</div>

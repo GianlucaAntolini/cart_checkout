@@ -3,121 +3,133 @@
 @{
     ViewBag.Title = "Carrello";
     // Get the products and order from the viewbag if it is not null
-   var products = ViewBag.Products as List<Product>;
+    var products = ViewBag.Products as List<Product>;
     var order = ViewBag.Order as Order;
 }
 
 
-    <div class="page-container">
-        <h3>Carrello</h3>
-        @if (order == null || order.OrderProducts == null || order.OrderProducts.Count == 0)
-        {
-            <p>Il carrello è vuoto</p>
-             <form asp-action="CreateOrder" method="post">
+<div class="page-container">
+    <h3>Carrello</h3>
+    @if (order == null || order.OrderProducts == null || order.OrderProducts.Count == 0)
+    {
+        <p>Il carrello è vuoto</p>
+        <form asp-action="CreateOrder" method="post">
             <button type="submit">Aggiungi Prodotti</button>
         </form>
-        }
+    }
 
-        <section class="cart-items">
-            <table class="cart-items cart-table"  data-aos="fade-up">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Prodotto</th>
-                        <th>Prezzo</th>
-                        <th>Quantità</th>
-                        <th>Totale</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var orderProduct in order.OrderProducts)
-                    {
-                        <tr class= "cart-row"  data-order-product-id="@orderProduct.Id">
-                            <td class="cart-action tac">
-            
-                                       <button type="button" class="no-bg-button remove-product-btn" data-order-id="@orderProduct.OrderId" data-product-id="@orderProduct.ProductId"><i class="fa fa-trash "></i></button>
+    <section class="cart-items">
+        <table class="cart-items cart-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Prodotto</th>
+                    <th>Prezzo</th>
+                    <th>Quantità</th>
+                    <th>Totale</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var orderProduct in order.OrderProducts)
+                {
+                    <tr class="cart-row" data-order-product-id="@orderProduct.Id">
+                        <td class="cart-action tac">
 
-                        
-                            </td>
-                            <td class="cart-item">
-                                <img src="~/img/products/@(orderProduct.ProductId).png" data-aos-delay="300"  data-aos="zoom-in" alt="Product Image"  class="productImage"/>
-                                @orderProduct.Product.Name</td>
-                            <td class="cart-price tar">@orderProduct.Product.Price</td>
-                            <td class="cart-action tac">
-                                <div class="cart-quantity">
-                      
-                                    <button type="submit" class="cart-quantity-minus no-bg-button" data-order-id="@orderProduct.OrderId" data-product-id="@orderProduct.ProductId" @(orderProduct.Quantity <= 1 ? "disabled" : "")><i class="fa fa-minus"></i></button>
-                              
+                            <button type="button" class="no-bg-button remove-product-btn"
+                                data-order-id="@orderProduct.OrderId" data-product-id="@orderProduct.ProductId"><i
+                                    class="fa fa-trash "></i></button>
+
+
+                        </td>
+                        <td class="cart-item">
+                            <img src="~/img/products/@(orderProduct.ProductId).png" alt="Product Image"
+                                class="productImage" />
+                            @orderProduct.Product.Name
+                        </td>
+                        <td class="cart-price tar">@orderProduct.Product.Price</td>
+                        <td class="cart-action tac">
+                            <div class="cart-quantity">
+
+                                <button type="submit" class="cart-quantity-minus no-bg-button"
+                                    data-order-id="@orderProduct.OrderId" data-product-id="@orderProduct.ProductId"
+                                @(orderProduct.Quantity <= 1 ? "disabled" : "")><i class="fa fa-minus"></i></button>
+
                                 <span class="cart-quantity-value">@orderProduct.Quantity</span>
-         
-                                    <button type="submit" class="cart-quantity-plus no-bg-button" data-order-id="@orderProduct.OrderId" data-product-id="@orderProduct.ProductId"
-                                         @(products.First(p => p.Id == orderProduct.ProductId).StockQuantity <= orderProduct.Quantity ? "disabled" : "")><i class="fa fa-plus"></i></button>  
-                               
-                                </div>
-                            </td>
 
-                            
-                            <td class="row-total tar">
-                                <span class ="@(order.CouponId != null && orderProduct.Price != orderProduct.PriceWithCoupon ? "strike" : "")">@orderProduct.Price</span>
-                                <br />
-                                @if (order.CouponId != null && orderProduct.Price != orderProduct.PriceWithCoupon)
-                                {
-                                <span>@orderProduct.PriceWithCoupon</span>
-                                }
-                                </td>
-                        </tr>
-                    }
+                                <button type="submit" class="cart-quantity-plus no-bg-button"
+                                    data-order-id="@orderProduct.OrderId" data-product-id="@orderProduct.ProductId"
+                                @(products.First(p => p.Id == orderProduct.ProductId).StockQuantity <=
+                                    orderProduct.Quantity ? "disabled" : "")><i class="fa fa-plus"></i></button>
+
+                            </div>
+                        </td>
 
 
-                    
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="4">&nbsp;</td>
-                        <td class="cart-total tar">
-                           <span  class = "@(order.CouponId != null && order.TotalAmount != order.TotalAmountWithCoupon ? "strike" : "")"> @order.TotalAmount</span>
-                            @if (order.CouponId != null && order.TotalAmount != order.TotalAmountWithCoupon)
+                        <td class="row-total tar">
+                            <span
+                                class="order-total @(order.CouponId != null && orderProduct.Price != orderProduct.PriceWithCoupon ? "strike" : "")">@orderProduct.Price</span>
+                            <br />
+                            @if (order.CouponId != null && orderProduct.Price != orderProduct.PriceWithCoupon)
                             {
-                                <br />
-                                <span class="discountPercentage">- @order.Coupon.PercentageDiscount.ToString().Split('.')[0]%</span>
-                                <br />
-                                <span>@order.TotalAmountWithCoupon</span>
-                            }                            
-                            </td>
+                                <span>@orderProduct.PriceWithCoupon</span>
+                            }
+                        </td>
                     </tr>
+                }
 
-                </tfoot>
-            </table>
-        </section>
-        <!-- Would be great to do this with AJAX -->
-                <section class="cart-coupon tar">
+
+
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4">&nbsp;</td>
+                    <td class="cart-total tar">
+                        <span
+                            class="@(order.CouponId != null && order.TotalAmount != order.TotalAmountWithCoupon ? "strike" : "")">
+                            @order.TotalAmount</span>
+                        @if (order.CouponId != null && order.TotalAmount != order.TotalAmountWithCoupon)
+                        {
+                            <br />
+                            <span class="discountPercentage">-
+                                @order.Coupon.PercentageDiscount.ToString().Split('.')[0]%</span>
+                            <br />
+                            <span>@order.TotalAmountWithCoupon</span>
+                        }
+                    </td>
+                </tr>
+
+            </tfoot>
+        </table>
+    </section>
+    <!-- Would be great to do this with AJAX -->
+    <section class="cart-coupon tar">
 
         <form asp-action="ApplyCoupon" method="post">
             <input type="text" name="couponCode" />
             <button type="submit">Applica coupon</button>
         </form>
         @if (order.CouponId != null)
-        {   
-       <div class="couponCode" data-aos="zoom-in" data-aos-delay="300">
-  <form asp-action="RemoveCoupon" method="post" class="couponForm">
-    <button type="submit">
-      <span class="couponText">@order.Coupon.Code</span>
-      <span class="removeCoupon">X</span>
-    </button>
-  </form>
+        {
+            <div class="couponCode">
+                <form asp-action="RemoveCoupon" method="post" class="couponForm">
+                    <button type="submit">
+                        <span class="couponText">@order.Coupon.Code</span>
+                        <span class="removeCoupon">X</span>
+                    </button>
+                </form>
+            </div>
+        }
+    </section>
+
+
+
+    <section class="tar">
+        <form asp-action="UserInfo" method="post">
+            <button type="submit" class="button" @(order.OrderProducts == null || order.OrderProducts.Count == 0 ?
+                "disabled" : "")>Procedi</button>
+        </form>
+
+
+
+    </section>
 </div>
-        } 
-                </section>
-
-
-
-        <section class="tar">
-    <form asp-action="UserInfo" method="post">
-         <button type="submit" class="button" 
-                    @(order.OrderProducts == null || order.OrderProducts.Count == 0 ? "disabled" : "")>Procedi</button>
-    </form>
-
-</section>
-    </div>
-
-

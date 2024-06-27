@@ -2,7 +2,10 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
-AOS.init();
+AOS.init({
+  offset: 300,
+  once: true,
+});
 var currentPage = location.pathname.split("/")[1];
 if (currentPage == "UserInfo") {
   document.addEventListener("DOMContentLoaded", function () {
@@ -70,10 +73,10 @@ if (currentPage == "Cart") {
 
           $(productRow).fadeOut(300, function () {
             productRow.remove();
-            // if there are no more products in the cart, reolad the page
-            if (document.querySelectorAll(".cart-row").length == 0) {
+            // Wait other 100ms then reload the page
+            setTimeout(() => {
               window.location.reload(true);
-            }
+            }, 100);
           });
           console.log(
             "Product removed successfully:",
@@ -124,8 +127,20 @@ if (currentPage == "Cart") {
         const result = await response.json();
         console.log("Product quantity increased successfully:", result);
 
-        // Force page reload
-        window.location.reload(true);
+        // Update quantity of the element in the same row but with class cart-quantity-value
+        const quantityElement = this.parentElement.querySelector(
+          ".cart-quantity-value"
+        );
+        const quantity = parseInt(quantityElement.textContent);
+
+        $(quantityElement).fadeOut(150, function () {
+          quantityElement.textContent = quantity + 1;
+          $(this).fadeIn();
+          // Wait other 100ms then reload the page
+          setTimeout(() => {
+            window.location.reload(true);
+          }, 100);
+        });
       } catch (error) {
         console.error("Error:", error);
       }
@@ -171,14 +186,23 @@ if (currentPage == "Cart") {
 
         const result = await response.json();
         console.log("Product quantity decreased successfully:", result);
+        // Update quantity of the element in the same row but with class cart-quantity-value
+        const quantityElement = this.parentElement.querySelector(
+          ".cart-quantity-value"
+        );
+        const quantity = parseInt(quantityElement.textContent);
 
-        // force page reload
-        window.location.reload(true);
+        $(quantityElement).fadeOut(150, function () {
+          quantityElement.textContent = quantity - 1;
+          $(this).fadeIn();
+          // Wait other 100ms then reload the page
+          setTimeout(() => {
+            window.location.reload(true);
+          }, 100);
+        });
       } catch (error) {
         console.error("Error:", error);
       }
     });
   });
-}
-if (currentPage == "Orders") {
 }
