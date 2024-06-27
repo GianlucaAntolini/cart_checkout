@@ -68,6 +68,10 @@ if (currentPage == "Cart") {
           // Remove the product row (parent of the parent of the button)
           const productRow = this.parentElement.parentElement;
           productRow.remove();
+          // if there are no more products in the cart, reolad the page
+          if (document.querySelectorAll(".cart-row").length == 0) {
+            window.location.reload(true);
+          }
         } catch (error) {
           console.error("Error:", error);
         }

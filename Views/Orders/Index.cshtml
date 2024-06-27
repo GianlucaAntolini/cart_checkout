@@ -29,7 +29,7 @@
                 {
                     <span>Richiedo fattura</span><br/>
                     <span>- @order.OrderInvoice.CF<br/></span>
-                   <span> - @order.OrderInvoice.PIVA<br/></span>
+                    <span>- @order.OrderInvoice.PIVA<br/></span>
                    
             <form asp-action="InvoicePDF" method="post">
                 <input type="hidden" name="orderId" value="@order.Id" />
