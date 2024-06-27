@@ -34,11 +34,12 @@ if (currentPage == "Cart") {
 
     removeProductButtons.forEach((button) => {
       button.addEventListener("click", async function () {
-        const orderProductId = this.getAttribute("data-order-product-id");
+        const orderId = this.getAttribute("data-order-id");
+        const productId = this.getAttribute("data-product-id");
 
-        // Make sure the orderProductId is valid
-        if (!orderProductId) {
-          console.error("Invalid OrderProductId");
+        // Make sure the orderId and productId are valid
+        if (!orderId || !productId) {
+          console.error("Invalid data");
           return;
         }
 
@@ -48,7 +49,10 @@ if (currentPage == "Cart") {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ orderProductId: parseInt(orderProductId) }),
+            body: JSON.stringify({
+              orderId: parseInt(orderId),
+              productId: parseInt(productId),
+            }),
           });
 
           console.log("Response:", response);
@@ -76,21 +80,24 @@ if (currentPage == "Cart") {
   );
   increaseProductQuantityButtons.forEach((button) => {
     button.addEventListener("click", async function () {
-      const orderProductId = this.getAttribute("data-order-product-id");
+      const orderId = this.getAttribute("data-order-id");
+      const productId = this.getAttribute("data-product-id");
 
-      // Make sure the orderProductId is valid
-      if (!orderProductId) {
-        console.error("Invalid OrderProductId");
+      // Make sure the orderId and productId are valid
+      if (!orderId || !productId) {
+        console.error("Invalid data");
         return;
       }
-
       try {
         const response = await fetch("/Cart/IncreaseProductQuantity", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ orderProductId: parseInt(orderProductId) }),
+          body: JSON.stringify({
+            orderId: parseInt(orderId),
+            productId: parseInt(productId),
+          }),
         });
 
         console.log("Response:", response);
@@ -120,11 +127,12 @@ if (currentPage == "Cart") {
 
   decreaseProductQuantityButtons.forEach((button) => {
     button.addEventListener("click", async function () {
-      const orderProductId = this.getAttribute("data-order-product-id");
+      const orderId = this.getAttribute("data-order-id");
+      const productId = this.getAttribute("data-product-id");
 
-      // Make sure the orderProductId is valid
-      if (!orderProductId) {
-        console.error("Invalid OrderProductId");
+      // Make sure the orderId and productId are valid
+      if (!orderId || !productId) {
+        console.error("Invalid data");
         return;
       }
 
@@ -134,7 +142,10 @@ if (currentPage == "Cart") {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ orderProductId: parseInt(orderProductId) }),
+          body: JSON.stringify({
+            orderId: parseInt(orderId),
+            productId: parseInt(productId),
+          }),
         });
 
         console.log("Response:", response);

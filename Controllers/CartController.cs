@@ -205,6 +205,14 @@ namespace YourNamespace.Controllers
 
 
 
+        public class CartEditRequest
+        {
+            public int OrderId { get; set; }
+            public int ProductId { get; set; }
+
+        }
+
+
         [HttpPost("RemoveProduct")]
         public async Task<IActionResult> RemoveProduct([FromBody] CartEditRequest request)
         {
@@ -214,26 +222,20 @@ namespace YourNamespace.Controllers
                 return Unauthorized();
             }
             // Validate input
-            if (request.OrderProductId <= 0)
+            if (request.OrderId <= 0 || request.ProductId <= 0)
             {
-                return BadRequest("Invalid OrderProductId");
+                return BadRequest("Invalid order data");
             }
 
-            // Get the order id from the session else return bad request
-            int orderId = HttpContext.Session.GetInt32("OrderId") ?? 0;
-            if (orderId == 0)
-            {
-                return BadRequest("Order not found in session");
-            }
 
-            var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
+            var orderResult = await _orderRepository.GetByIdWithRelatedEntities(request.OrderId);
             if (orderResult.Value is Order order)
             {
                 if (await CheckEditableOrder(order) == false)
                 {
                     return BadRequest("Action unavailable");
                 }
-                var orderProduct = order.OrderProducts.FirstOrDefault(op => op.Id == request.OrderProductId);
+                var orderProduct = order.OrderProducts.FirstOrDefault(op => op.ProductId == request.ProductId);
                 if (orderProduct != null)
                 {
                     order.OrderProducts.Remove(orderProduct);
@@ -255,11 +257,6 @@ namespace YourNamespace.Controllers
             }
         }
 
-        public class CartEditRequest
-        {
-            public int OrderProductId { get; set; }
-        }
-
 
 
 
@@ -275,26 +272,21 @@ namespace YourNamespace.Controllers
                 return Unauthorized();
             }
             // Validate input
-            if (request.OrderProductId <= 0)
+            if (request.OrderId <= 0 || request.ProductId <= 0)
             {
-                return BadRequest("Invalid OrderProductId");
+                return BadRequest("Invalid order data");
             }
 
-            // Get the order id from the session else return bad request
-            int orderId = HttpContext.Session.GetInt32("OrderId") ?? 0;
-            if (orderId == 0)
-            {
-                return BadRequest("Order not found in session");
-            }
 
-            var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
+
+            var orderResult = await _orderRepository.GetByIdWithRelatedEntities(request.OrderId);
             if (orderResult.Value is Order order)
             {
                 if (await CheckEditableOrder(order) == false)
                 {
                     return BadRequest("Action unavailable");
                 }
-                var orderProduct = order.OrderProducts.FirstOrDefault(op => op.Id == request.OrderProductId);
+                var orderProduct = order.OrderProducts.FirstOrDefault(op => op.ProductId == request.ProductId);
                 if (orderProduct != null)
                 {
 
@@ -333,26 +325,19 @@ namespace YourNamespace.Controllers
                 return Unauthorized();
             }
             // Validate input
-            if (request.OrderProductId <= 0)
+            if (request.OrderId <= 0 || request.ProductId <= 0)
             {
-                return BadRequest("Invalid OrderProductId");
+                return BadRequest("Invalid order data");
             }
 
-            // Get the order id from the session else return bad request
-            int orderId = HttpContext.Session.GetInt32("OrderId") ?? 0;
-            if (orderId == 0)
-            {
-                return BadRequest("Order not found in session");
-            }
-
-            var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
+            var orderResult = await _orderRepository.GetByIdWithRelatedEntities(request.OrderId);
             if (orderResult.Value is Order order)
             {
                 if (await CheckEditableOrder(order) == false)
                 {
                     return BadRequest("Action unavailable");
                 }
-                var orderProduct = order.OrderProducts.FirstOrDefault(op => op.Id == request.OrderProductId);
+                var orderProduct = order.OrderProducts.FirstOrDefault(op => op.ProductId == request.ProductId);
                 if (orderProduct != null)
                 {
 
