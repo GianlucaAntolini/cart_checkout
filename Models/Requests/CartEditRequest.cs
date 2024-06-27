@@ -1,4 +1,4 @@
-
+[Serializable]
 public class CartEditRequest
 {
     public int OrderId { get; set; }

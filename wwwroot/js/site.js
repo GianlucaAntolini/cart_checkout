@@ -173,3 +173,5 @@ if (currentPage == "Cart") {
     });
   });
 }
+if (currentPage == "Orders") {
+}

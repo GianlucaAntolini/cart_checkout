@@ -31,10 +31,10 @@
                     <span>- @order.OrderInvoice.CF<br/></span>
                     <span>- @order.OrderInvoice.PIVA<br/></span>
                    
-            <form asp-action="InvoicePDF" method="post">
-                <input type="hidden" name="orderId" value="@order.Id" />
-                <button type="submit" class="button">Scarica fattura</button>
-            </form>
+
+<button type="button" class="button" onclick="window.location.href='@Url.Action("InvoicePDF", "Orders", new { orderId = @order.Id })'">Scarica fattura</button>
+
+        
         
                 }
         </div>

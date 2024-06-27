@@ -2,11 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using YourNamespace.Models;
 
 using YourNamespace.Data.Repositories;
-using Stripe.BillingPortal;
 using Stripe.Checkout;
-using System.Reflection.Metadata.Ecma335;
-using PuppeteerSharp;
-using PuppeteerSharp.Media;
 
 namespace YourNamespace.Controllers
 {

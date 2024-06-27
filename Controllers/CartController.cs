@@ -199,10 +199,9 @@ namespace YourNamespace.Controllers
 
 
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
+
         }
 
 
@@ -442,10 +441,6 @@ namespace YourNamespace.Controllers
                 // Else reset the prices
                 resetOrderPrice(order);
             }
-
-
-
-
             return await _orderRepository.Update(order.Id, order);
 
         }
@@ -527,8 +522,6 @@ namespace YourNamespace.Controllers
                     return RedirectToAction("Index");
                 }
             }
-
-
             return RedirectToAction("Index", "UserInfo");
         }
 
@@ -542,7 +535,6 @@ namespace YourNamespace.Controllers
             {
                 return RedirectToAction("Index");
             }
-
             var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
             if (orderResult.Value is Order order)
             {
@@ -567,18 +559,10 @@ namespace YourNamespace.Controllers
                     order.TotalAmount += product.Price;
                     order.TotalAmountWithCoupon += product.Price;
                 }
-
                 // Update the order in the database
                 await _orderRepository.Update(orderId, order);
             }
-
             return RedirectToAction("Index");
-
-
-
-
-
-
         }
     }
 

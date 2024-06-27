@@ -5,9 +5,14 @@ using YourNamespace.Data.Repositories;
 using PuppeteerSharp;
 using PuppeteerSharp.Media;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace YourNamespace.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
+
     public class OrdersController : Controller
     {
         private readonly IUnitOfwork _unitOfWork;
@@ -46,6 +51,9 @@ namespace YourNamespace.Controllers
             _userManager = userManager;
 
         }
+
+        [HttpGet]
+        [ApiExplorerSettings(IgnoreApi = true)]
 
         public async Task<IActionResult> Index()
         {
@@ -104,25 +112,57 @@ namespace YourNamespace.Controllers
         }
 
 
-
-
-        [HttpPost]
-        public async Task<IActionResult> InvoicePDF()
+        // Checks if invoice can be sent
+        // return false if the order has not been paid yet, if the order has no invoice or if the order is not of the user
+        private async Task<bool> CheckInvoiceOrder(Order order)
         {
-            // I now cleared the session after the payment, so I need to get the order id from the query string
-            // Since there is no login nor register for now this is the only way to get the order id
-            int? orderId = Request.Form.ContainsKey("orderId") && int.TryParse(Request.Form["orderId"], out int castOrderId) ? castOrderId : null;
-            if (orderId == null)
+            // Check if the order is of the user
+            var userOrder = await _userOrderRepository.GetByOrderIdAndUserId(order.Id, _userManager.GetUserId(User));
+            if (userOrder.Value is UserOrder foundUserOrder)
             {
-                return RedirectToAction("Index", "Home");
+                // Check if the order has not been paid yet
+                var hasOrderBeenPaid = await _orderPaymentRepository.HasOrderBeenPaidByOrderId(foundUserOrder.OrderId);
+                if (hasOrderBeenPaid.Value)
+                {
+                    // Check if the order has an invoice
+                    return order.OrderInvoice != null;
+                }
+
+
+            }
+
+            return false;
+
+        }
+
+
+        [Authorize]
+        //InvoicePDF with orderId as parameter (int)
+        [HttpGet("InvoicePdf/{orderId:int}")]
+
+        public async Task<IActionResult> InvoicePDF(int orderId)
+        {
+            // Retrieve the user ID from the token (JWT authentication)
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+            if (orderId <= 0)
+            {
+                return BadRequest();
             }
 
             // Get the order with related entities
-            var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId.Value);
+            var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
             if (orderResult.Value is Order order)
             {
+                if (await CheckInvoiceOrder(order) == false)
+                {
+                    return BadRequest("Action unavailable");
+                }
                 // Fetch order payment with execution date from orderpaymentrepository
-                var orderPaymentResult = await _orderPaymentRepository.GetByOrderIdWithExecutionDatAndPaymentType(orderId.Value);
+                var orderPaymentResult = await _orderPaymentRepository.GetByOrderIdWithExecutionDatAndPaymentType(orderId);
                 OrderPayment? orderPayment = null;
                 if (orderPaymentResult is OrderPayment queryResultOrderPayment && queryResultOrderPayment != null && queryResultOrderPayment.ExecutionDate != null)
                 {
@@ -130,7 +170,7 @@ namespace YourNamespace.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("Index", "Home");
+                    return BadRequest();
                 }
 
                 var invoiceJSON = new Dictionary<string, string>
@@ -162,7 +202,7 @@ namespace YourNamespace.Controllers
             }
             else
             {
-                return RedirectToAction("Index", "Home");
+                return BadRequest();
             }
 
 
