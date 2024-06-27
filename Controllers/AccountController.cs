@@ -9,6 +9,12 @@ public class AccountController(SignInManager<User> signInManager, UserManager<Us
 {
     public IActionResult Login(string? returnUrl = null)
     {
+        // If the user is already logged in, redirect to the home page
+        if (signInManager.IsSignedIn(User))
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
         ViewData["ReturnUrl"] = returnUrl;
         return View();
     }
@@ -34,6 +40,12 @@ public class AccountController(SignInManager<User> signInManager, UserManager<Us
 
     public IActionResult Register(string? returnUrl = null)
     {
+        // If the user is already logged in, redirect to the home page
+        if (signInManager.IsSignedIn(User))
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
         ViewData["ReturnUrl"] = returnUrl;
         return View();
     }

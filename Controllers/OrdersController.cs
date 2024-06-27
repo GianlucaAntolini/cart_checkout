@@ -137,7 +137,6 @@ namespace YourNamespace.Controllers
 
 
         [Authorize]
-        //InvoicePDF with orderId as parameter (int)
         [HttpGet("InvoicePdf/{orderId:int}")]
 
         public async Task<IActionResult> InvoicePDF(int orderId)
@@ -172,6 +171,8 @@ namespace YourNamespace.Controllers
                 {
                     return BadRequest();
                 }
+
+
 
                 var invoiceJSON = new Dictionary<string, string>
         {
