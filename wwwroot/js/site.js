@@ -2,7 +2,7 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
-
+AOS.init();
 var currentPage = location.pathname.split("/")[1];
 if (currentPage == "UserInfo") {
   document.addEventListener("DOMContentLoaded", function () {

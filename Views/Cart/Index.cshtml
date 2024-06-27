@@ -19,7 +19,7 @@
         }
 
         <section class="cart-items">
-            <table class="cart-items cart-table">
+            <table class="cart-items cart-table"  data-aos="fade-up">
                 <thead>
                     <tr>
                         <th></th>
@@ -40,7 +40,7 @@
                         
                             </td>
                             <td class="cart-item">
-                                <img src="~/img/products/@(orderProduct.ProductId).png" alt="Product Image"  class="productImage"/>
+                                <img src="~/img/products/@(orderProduct.ProductId).png" data-aos-delay="300"  data-aos="zoom-in" alt="Product Image"  class="productImage"/>
                                 @orderProduct.Product.Name</td>
                             <td class="cart-price tar">@orderProduct.Product.Price</td>
                             <td class="cart-action tac">
