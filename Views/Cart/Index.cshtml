@@ -1,7 +1,7 @@
 @using YourNamespace.Models;
 @model Product
 @{
-    ViewBag.Title = "Cart";
+    ViewBag.Title = "Carrello";
     // Get the products and order from the viewbag if it is not null
    var products = ViewBag.Products as List<Product>;
     var order = ViewBag.Order as Order;
@@ -98,7 +98,7 @@
         </form>
         @if (order.CouponId != null)
         {   
-       <div class="couponCode">
+       <div class="couponCode" data-aos="zoom-in" data-aos-delay="300">
   <form asp-action="RemoveCoupon" method="post" class="couponForm">
     <button type="submit">
       <span class="couponText">@order.Coupon.Code</span>

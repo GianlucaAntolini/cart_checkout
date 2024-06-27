@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using YourNamespace.Models;
 
 using YourNamespace.Data.Repositories;
-using Stripe.Checkout;
-using System.Reflection.Metadata.Ecma335;
 using PuppeteerSharp;
 using PuppeteerSharp.Media;
 using Microsoft.AspNetCore.Identity;
@@ -181,7 +179,7 @@ namespace YourNamespace.Controllers
 
         private static async Task<byte[]> GeneratePdfFromHtml(string htmlContent)
         {
-            await new BrowserFetcher().DownloadAsync();
+            //await new BrowserFetcher().DownloadAsync();
             await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
             await using var page = await browser.NewPageAsync();
             await page.SetContentAsync(htmlContent);
