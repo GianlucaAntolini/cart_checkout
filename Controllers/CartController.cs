@@ -3,6 +3,8 @@ using YourNamespace.Models;
 
 using YourNamespace.Data.Repositories;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace YourNamespace.Controllers
 {
@@ -206,12 +208,13 @@ namespace YourNamespace.Controllers
 
 
 
-
+        [Authorize]
         [HttpPost("RemoveProduct")]
         public async Task<IActionResult> RemoveProduct([FromBody] CartEditRequest request)
         {
-            // If user is not logged in return unauthorized
-            if (_signInManager.IsSignedIn(User) == false)
+            // Retrieve the user ID from the token (JWT authentication)
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized();
             }
@@ -370,6 +373,7 @@ namespace YourNamespace.Controllers
             order.TotalAmountWithCoupon = order.TotalAmount;
 
             order.CouponId = null;
+            order.Coupon = null;
 
         }
 
@@ -444,6 +448,7 @@ namespace YourNamespace.Controllers
                 // Else reset the prices
                 resetOrderPrice(order);
             }
+
 
 
 
