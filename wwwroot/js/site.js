@@ -61,9 +61,9 @@ if (currentPage == "Cart") {
           const result = await response.json();
           console.log("Product removed successfully:", result);
 
-          // Optionally, you can refresh the page or update the UI to reflect changes
-          // force page reload
-          window.location.reload(true);
+          // Remove the product row (parent of the parent of the button)
+          const productRow = this.parentElement.parentElement;
+          productRow.remove();
         } catch (error) {
           console.error("Error:", error);
         }
@@ -106,8 +106,7 @@ if (currentPage == "Cart") {
         const result = await response.json();
         console.log("Product quantity increased successfully:", result);
 
-        // Optionally, you can refresh the page or update the UI to reflect changes
-        // force page reload
+        // Force page reload
         window.location.reload(true);
       } catch (error) {
         console.error("Error:", error);
@@ -151,7 +150,6 @@ if (currentPage == "Cart") {
         const result = await response.json();
         console.log("Product quantity decreased successfully:", result);
 
-        // Optionally, you can refresh the page or update the UI to reflect changes
         // force page reload
         window.location.reload(true);
       } catch (error) {

@@ -21,5 +21,10 @@ namespace YourNamespace.Data.Repositories
         {
             return await dbSet.Where(uo => uo.UserId == userId).ToListAsync();
         }
+
+        public async Task<ActionResult<UserOrder>> GetByOrderIdAndUserId(int orderId, string userId)
+        {
+            return await dbSet.FirstOrDefaultAsync(uo => uo.OrderId == orderId && uo.UserId == userId);
+        }
     }
 }

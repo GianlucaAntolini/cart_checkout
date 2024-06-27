@@ -19,7 +19,7 @@
         }
 
         <section class="cart-items">
-            <table class="cart-items">
+            <table class="cart-items cart-table">
                 <thead>
                     <tr>
                         <th></th>
@@ -32,7 +32,7 @@
                 <tbody>
                     @foreach (var orderProduct in order.OrderProducts)
                     {
-                        <tr>
+                        <tr class= "cart-row"  data-order-product-id="@orderProduct.Id">
                             <td class="cart-action tac">
             
                                        <button type="button" class="no-bg-button remove-product-btn" data-order-product-id="@orderProduct.Id"><i class="fa fa-trash "></i></button>

@@ -183,6 +183,26 @@ namespace YourNamespace.Controllers
             return View();
         }
 
+        // Check if the order is editable
+        // return false if the order is not editable by the user or if it has already been paid
+        private async Task<bool> CheckEditableOrder(Order order)
+        {
+            // Check if the order is of the user
+            var userOrder = await _userOrderRepository.GetByOrderIdAndUserId(order.Id, _userManager.GetUserId(User));
+            if (userOrder.Value is UserOrder foundUserOrder)
+            {
+                // Check if the order has not been paid yet
+                var hasOrderBeenPaid = await _orderPaymentRepository.HasOrderBeenPaidByOrderId(foundUserOrder.OrderId);
+                return !hasOrderBeenPaid.Value;
+
+
+            }
+            else
+            {
+                return false;
+            }
+        }
+
 
 
         [HttpPost("RemoveProduct")]
@@ -209,6 +229,10 @@ namespace YourNamespace.Controllers
             var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
             if (orderResult.Value is Order order)
             {
+                if (await CheckEditableOrder(order) == false)
+                {
+                    return BadRequest("Action unavailable");
+                }
                 var orderProduct = order.OrderProducts.FirstOrDefault(op => op.Id == request.OrderProductId);
                 if (orderProduct != null)
                 {
@@ -266,9 +290,14 @@ namespace YourNamespace.Controllers
             var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
             if (orderResult.Value is Order order)
             {
+                if (await CheckEditableOrder(order) == false)
+                {
+                    return BadRequest("Action unavailable");
+                }
                 var orderProduct = order.OrderProducts.FirstOrDefault(op => op.Id == request.OrderProductId);
                 if (orderProduct != null)
                 {
+
                     // If the user is trying to be sneaky and increase the quantity of a product that is already the stock quantity, just return to the index
                     if (orderProduct.Quantity == orderProduct.Product.StockQuantity)
                     {
@@ -319,9 +348,14 @@ namespace YourNamespace.Controllers
             var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
             if (orderResult.Value is Order order)
             {
+                if (await CheckEditableOrder(order) == false)
+                {
+                    return BadRequest("Action unavailable");
+                }
                 var orderProduct = order.OrderProducts.FirstOrDefault(op => op.Id == request.OrderProductId);
                 if (orderProduct != null)
                 {
+
                     // If the user is trying to be sneaky and decrease the quantity of a product that is already 1, just return to the index
                     if (orderProduct.Quantity == 1)
                     {
