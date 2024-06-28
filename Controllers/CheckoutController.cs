@@ -23,8 +23,11 @@ namespace YourNamespace.Controllers
 
         private readonly ProductRepository _productRepository;
 
+        private readonly PayPalService _payPalService;
 
-        public CheckoutController(IUnitOfwork unitOfwork)
+
+        public CheckoutController(IUnitOfwork unitOfwork, PayPalService payPalService)
+
         {
             _unitOfWork = unitOfwork;
             _orderRepository = new OrderRepository(_unitOfWork);
@@ -33,6 +36,8 @@ namespace YourNamespace.Controllers
             _paymentTypeRepository = new PaymentTypeRepository(_unitOfWork);
             _orderPaymentRepository = new OrderPaymentRepository(_unitOfWork);
             _productRepository = new ProductRepository(_unitOfWork);
+            _payPalService = payPalService;
+
         }
 
         public async Task<IActionResult> Index()
@@ -149,7 +154,7 @@ namespace YourNamespace.Controllers
                 return RedirectToAction("Index");
             }
 
-            if (paymentTypeId == null || !paymentTypes.Any(pt => pt.Id == paymentTypeId) || paymentTypes.First(pt => pt.Id == paymentTypeId).Name != "Stripe")
+            if (paymentTypeId == null || !paymentTypes.Any(pt => pt.Id == paymentTypeId) || (paymentTypes.First(pt => pt.Id == paymentTypeId).Name != "Stripe" && paymentTypes.First(pt => pt.Id == paymentTypeId).Name != "PayPal"))
             {
                 return RedirectToAction("Index");
             }
@@ -192,42 +197,62 @@ namespace YourNamespace.Controllers
                 }
 
 
-                var domain1 = Request.Host.Host;
                 // Stripe checkout
                 var domain = "http://localhost:5198/";
-
-                var options = new Stripe.Checkout.SessionCreateOptions
+                if (paymentTypes.First(pt => pt.Id == paymentTypeId).Name == "Stripe")
                 {
-                    SuccessUrl = domain + "Checkout/Success",
-                    CancelUrl = domain + "Checkout/Error",
-                    Mode = "payment",
-                    CustomerEmail = order.OrderUserDetail.Email,
-                    LineItems = order.OrderProducts.Select(orderProduct => new SessionLineItemOptions
+                    var options = new Stripe.Checkout.SessionCreateOptions
                     {
-                        PriceData = new SessionLineItemPriceDataOptions
+                        SuccessUrl = domain + "Checkout/Success",
+                        CancelUrl = domain + "Checkout/Error",
+                        Mode = "payment",
+                        CustomerEmail = order.OrderUserDetail.Email,
+                        LineItems = order.OrderProducts.Select(orderProduct => new SessionLineItemOptions
                         {
-                            Currency = "eur",
-                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            PriceData = new SessionLineItemPriceDataOptions
                             {
-                                Name = orderProduct.Product.Name,
-                                Images = new List<string> { domain + "img/products/" + orderProduct.Product.Id + ".png" }
+                                Currency = "eur",
+                                ProductData = new SessionLineItemPriceDataProductDataOptions
+                                {
+                                    Name = orderProduct.Product.Name,
+                                    Images = new List<string> { domain + "img/products/" + orderProduct.Product.Id + ".png" }
+                                },
+                                // Convert the price to cents
+                                UnitAmount = (long)((orderProduct.PriceWithCoupon / orderProduct.Quantity) * 100),
                             },
-                            // Convert the price to cents
-                            UnitAmount = (long)((orderProduct.PriceWithCoupon / orderProduct.Quantity) * 100),
-                        },
-                        Quantity = orderProduct.Quantity,
-                    }).ToList(),
+                            Quantity = orderProduct.Quantity,
+                        }).ToList(),
 
-                };
+                    };
 
-                var service = new Stripe.Checkout.SessionService();
-                var session = service.Create(options);
+                    var service = new Stripe.Checkout.SessionService();
+                    var session = service.Create(options);
 
-                HttpContext.Session.SetString("StripeSessionId", session.Id);
+                    HttpContext.Session.SetString("StripeSessionId", session.Id);
 
 
-                Response.Headers.Append("Location", session.Url);
-                return new StatusCodeResult(303);
+                    Response.Headers.Append("Location", session.Url);
+                    return new StatusCodeResult(303);
+                }
+                else if (paymentTypes.First(pt => pt.Id == paymentTypeId).Name == "PayPal")
+                {
+                    var orderCreated = await _payPalService.CreateOrderAsync(order.TotalAmountWithCoupon, "EUR");
+
+                    var approvalLink = orderCreated.Links.FirstOrDefault(link => link.Rel == "approve")?.Href;
+                    if (approvalLink != null)
+                    {
+                        HttpContext.Session.SetString("PayPalOrderId", orderCreated.Id);
+                        return Redirect(approvalLink);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Error");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Index");
+                }
 
 
 
@@ -245,61 +270,68 @@ namespace YourNamespace.Controllers
 
         }
 
-        public async Task<IActionResult> Success()
+        public async Task<IActionResult> Success(string token)
         {
-            var sessionId = HttpContext.Session.GetString("StripeSessionId");
-            if (sessionId == null)
+            var stripeSessionId = HttpContext.Session.GetString("StripeSessionId");
+            var payPalOrderId = HttpContext.Session.GetString("PayPalOrderId");
+            if (stripeSessionId == null && payPalOrderId == null)
             {
                 return RedirectToAction("Error");
             }
-
-            var sessionService = new Stripe.Checkout.SessionService();
-            var session = sessionService.Get(sessionId);
-
-            if (session.PaymentStatus == "paid")
+            if (stripeSessionId != null)
             {
-                // Get the order payment id from session
-                int orderPaymentId = HttpContext.Session.GetInt32("OrderPaymentId") ?? 0;
-                if (orderPaymentId == 0)
+                var sessionService = new Stripe.Checkout.SessionService();
+                var session = sessionService.Get(stripeSessionId);
+                if (session.PaymentStatus != "paid") return RedirectToAction("Error");
+            }
+            if (payPalOrderId != null)
+            {
+                var captureResult = await _payPalService.CaptureOrderAsync(token);
+                if (captureResult.Status != "COMPLETED") return RedirectToAction("Error");
+            }
+
+            // Get the order payment id from session
+            int orderPaymentId = HttpContext.Session.GetInt32("OrderPaymentId") ?? 0;
+            if (orderPaymentId == 0)
+            {
+                return RedirectToAction("Error");
+            }
+            // Get the order payment
+            var orderPaymentResult = await _orderPaymentRepository.GetById(orderPaymentId);
+            if (orderPaymentResult.Result is OkObjectResult okOrderPaymentResult && okOrderPaymentResult.Value is OrderPayment orderPayment)
+            {
+                // Set the order payment as completed
+                orderPayment.ExecutionDate = DateTime.Now;
+                // Update the order payment
+                await _orderPaymentRepository.Update(orderPaymentId, orderPayment);
+                // Now get the order and reduce the product quantities
+                var orderId = orderPayment.OrderId;
+                var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
+                if (orderResult.Value is Order order)
+                {
+                    foreach (var orderProduct in order.OrderProducts)
+                    {
+                        var productResult = await _productRepository.GetById(orderProduct.ProductId);
+                        if (productResult.Result is OkObjectResult okProductResult && okProductResult.Value is Product product)
+                        {
+                            product.StockQuantity -= orderProduct.Quantity;
+                            await _productRepository.Update(product.Id, product);
+                        }
+                    }
+                }
+                else
                 {
                     return RedirectToAction("Error");
                 }
-                // Get the order payment
-                var orderPaymentResult = await _orderPaymentRepository.GetById(orderPaymentId);
-                if (orderPaymentResult.Result is OkObjectResult okOrderPaymentResult && okOrderPaymentResult.Value is OrderPayment orderPayment)
-                {
-                    // Set the order payment as completed
-                    orderPayment.ExecutionDate = DateTime.Now;
-                    // Update the order payment
-                    await _orderPaymentRepository.Update(orderPaymentId, orderPayment);
-                    // Now get the order and reduce the product quantities
-                    var orderId = orderPayment.OrderId;
-                    var orderResult = await _orderRepository.GetByIdWithRelatedEntities(orderId);
-                    if (orderResult.Value is Order order)
-                    {
-                        foreach (var orderProduct in order.OrderProducts)
-                        {
-                            var productResult = await _productRepository.GetById(orderProduct.ProductId);
-                            if (productResult.Result is OkObjectResult okProductResult && okProductResult.Value is Product product)
-                            {
-                                product.StockQuantity -= orderProduct.Quantity;
-                                await _productRepository.Update(product.Id, product);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        return RedirectToAction("Error");
-                    }
-                    // Remove the order id from session
-                    HttpContext.Session.Remove("OrderId");
-                    // Remove the order payment id from session
-                    HttpContext.Session.Remove("OrderPaymentId");
-                    // Set the order id in viewbag
-                    ViewBag.Order = order;
-                    return View();
-                }
+                // Remove the order id from session
+                HttpContext.Session.Remove("OrderId");
+                // Remove the order payment id from session
+                HttpContext.Session.Remove("OrderPaymentId");
+                // Set the order id in viewbag
+                ViewBag.Order = order;
+                return View();
             }
+
 
             return RedirectToAction("Error");
         }

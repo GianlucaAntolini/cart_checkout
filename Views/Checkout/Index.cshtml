@@ -1,122 +1,135 @@
-   @using YourNamespace.Models;
+@using YourNamespace.Models;
 @model Product
 @{
-    ViewBag.Title = "Checkout";
-    var order = ViewBag.Order as Order;
-    var newsletter = ViewBag.Newsletter as bool? ?? false;
-    var paymentTypes = ViewBag.PaymentTypes as List<PaymentType> ?? new List<PaymentType>();
+  ViewBag.Title = "Checkout";
+  var order = ViewBag.Order as Order;
+  var newsletter = ViewBag.Newsletter as bool? ?? false;
+  var paymentTypes = ViewBag.PaymentTypes as List<PaymentType> ?? new List<PaymentType>();
 }
-   
-   
-    <div class="page-container">
-      <h3>Checkout</h3>
-      <section class="user-info">
-        <h4>Riepilogo dati personali</h4>
-        <div>
-           @order.OrderUserDetail.Name @order.OrderUserDetail.Surname<br/>
-             @order.OrderUserDetail.Email<br/>
-             @order.OrderUserDetail.Nation.Name<br/><br/>
-                @if (newsletter)
-                {
-                    <span>Iscritto alla newsletter!</span><br/>
-                }
-                @if (order.OrderInvoice != null)
-                {
-                    <span>Richiedo fattura</span><br/>
-                    <span>- @order.OrderInvoice.CF<br/></span>
-                   <span> - @order.OrderInvoice.PIVA<br/></span>
-      
-                }
-        </div>
-      </section>
-      
-      <section class="cart-items">
-        <h4>Riepilogo carrello</h4>
-        <table class="cart-items">
-                <thead>
-                    <tr>
-                        <th>Prodotto</th>
-                        <th>Prezzo</th>
-                        <th>Quantità</th>
-                        <th>Totale</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var orderProduct in order.OrderProducts)
-                    {
-                        <tr>
-                  
-                            
-                            
-                            <td class="cart-item">
-                                <img src="~/img/products/@(orderProduct.ProductId).png" alt="Product Image"  class="productImage"/>
-                                @orderProduct.Product.Name
-                              </td>
-                            <td class="cart-price tar">@orderProduct.Product.Price</td>
-                            <td class="cart-action tac">
-                         
-                                <span class="cart-quantity-value">@orderProduct.Quantity</span>
-                           
-                            </td>
-                            <td class="row-total tar">
-                                <span class ="@(order.CouponId != null && orderProduct.Price != orderProduct.PriceWithCoupon ? "strike" : "")">@orderProduct.Price</span>
-                                <br />
-                                @if (order.CouponId != null && orderProduct.Price != orderProduct.PriceWithCoupon)
-                                {
-                                <span>@orderProduct.PriceWithCoupon</span>
-                                }
-                                </td>
-                        </tr>
-                    }
 
 
-                    
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="3">&nbsp;</td>
-                        <td class="cart-total tar">
-                           <span  class = "@(order.CouponId != null && order.TotalAmount != order.TotalAmountWithCoupon ? "strike" : "")"> @order.TotalAmount</span>
-                            @if (order.CouponId != null && order.TotalAmount != order.TotalAmountWithCoupon)
-                            {
-                                <br />
-                                <span class="discountPercentage">- @order.Coupon.PercentageDiscount.ToString().Split('.')[0]%</span>
-                                <br />
-                                <span>@order.TotalAmountWithCoupon</span>
+<div class="page-container">
+  <h3>Checkout</h3>
+  <section class="user-info">
+    <h4>Riepilogo dati personali</h4>
+    <div>
+      @order.OrderUserDetail.Name @order.OrderUserDetail.Surname<br />
+      @order.OrderUserDetail.Email<br />
+      @order.OrderUserDetail.Nation.Name<br /><br />
+      @if (newsletter)
+      {
+        <span>Iscritto alla newsletter!</span>
 
-                                <br>
+        <br />
+      }
+      @if (order.OrderInvoice != null)
+      {
+        <span>Richiedo fattura</span>
 
-      <span class="couponConfirm">@order.Coupon.Code</span>
-        
-                            } 
-                            
-                                                       
-                            </td>
-                    </tr>
+        <br />
+        <span>- @order.OrderInvoice.CF<br /></span>
+        <span> - @order.OrderInvoice.PIVA<br /></span>
 
-                </tfoot>
-            </table>
-      </section>
-    <form asp-action="GoToPayment" method="post">
-        <section class="payment">
-          <div class="field">
-            @foreach (var paymentType in paymentTypes)
-            {
-                <input type="radio" name="payment_type" value="@paymentType.Id" @if (paymentType.Name != "Stripe") { <text>disabled</text> }>
-                <label>Paga con @paymentType.Name</label><br/>
-            }       
-          </div>
-          
-          <div class="field field-checkbox">
-            <label>Ho letto e accetto le <a href="./terms_and_conditions.html" target="_blank">condizioni generali di vendita</a></label>
-            <input type="checkbox" name="terms_and_conditions" />
-          </div>
-          
-        </section>
-
-        <section>
-           <button type="submit" name="action" class="button">Indietro</button>
-            <button type="submit" name="action" class="button" value="continue">Procedi</button>
-        </section>
-      </form>
+      }
     </div>
+  </section>
+
+  <section class="cart-items">
+    <h4>Riepilogo carrello</h4>
+    <table class="cart-items">
+      <thead>
+        <tr>
+          <th>Prodotto</th>
+          <th>Prezzo</th>
+          <th>Quantità</th>
+          <th>Totale</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var orderProduct in order.OrderProducts)
+        {
+          <tr>
+
+
+
+            <td class="cart-item">
+              <img src="~/img/products/@(orderProduct.ProductId).png" alt="Product Image" class="productImage" />
+              @orderProduct.Product.Name
+            </td>
+            <td class="cart-price tar">@orderProduct.Product.Price</td>
+            <td class="cart-action tac">
+
+              <span class="cart-quantity-value">@orderProduct.Quantity</span>
+
+            </td>
+            <td class="row-total tar">
+              <span
+                class="@(order.CouponId != null && orderProduct.Price != orderProduct.PriceWithCoupon ? "strike" : "")">@orderProduct.Price</span>
+              <br />
+              @if (order.CouponId != null && orderProduct.Price != orderProduct.PriceWithCoupon)
+              {
+                <span>@orderProduct.PriceWithCoupon</span>
+              }
+            </td>
+          </tr>
+        }
+
+
+
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3">&nbsp;</td>
+          <td class="cart-total tar">
+            <span class="@(order.CouponId != null && order.TotalAmount != order.TotalAmountWithCoupon ? "strike" : "")">
+              @order.TotalAmount</span>
+            @if (order.CouponId != null && order.TotalAmount != order.TotalAmountWithCoupon)
+            {
+              <br />
+              <span class="discountPercentage">- @order.Coupon.PercentageDiscount.ToString().Split('.')[0]%</span>
+              <br />
+              <span>@order.TotalAmountWithCoupon</span>
+
+              <br>
+
+              <span class="couponConfirm">@order.Coupon.Code</span>
+
+            }
+
+
+          </td>
+        </tr>
+
+      </tfoot>
+    </table>
+  </section>
+  <form asp-action="GoToPayment" method="post">
+    <section class="payment">
+      <div class="field">
+        @foreach (var paymentType in paymentTypes)
+        {
+          <input type="radio" name="payment_type" value="@paymentType.Id" @if (paymentType.Name != "Stripe" &&
+          paymentType.Name != "PayPal")
+          {
+            <text>disabled</text>
+          }>
+          <label>Paga con @paymentType.Name</label>
+
+          <br />
+        }
+      </div>
+
+      <div class="field field-checkbox">
+        <label>Ho letto e accetto le <a href="./terms_and_conditions.html" target="_blank">condizioni generali di
+            vendita</a></label>
+        <input type="checkbox" name="terms_and_conditions" />
+      </div>
+
+    </section>
+
+    <section>
+      <button type="submit" name="action" class="button">Indietro</button>
+      <button type="submit" name="action" class="button" value="continue">Procedi</button>
+    </section>
+  </form>
+</div>

@@ -149,3 +149,5 @@ C:\Users\gianluca.antolini\Desktop\cart_checkout\bin\Debug\net8.0\Microsoft.AspN
 C:\Users\gianluca.antolini\Desktop\cart_checkout\bin\Debug\net8.0\Microsoft.Extensions.Identity.Core.dll
 C:\Users\gianluca.antolini\Desktop\cart_checkout\bin\Debug\net8.0\Microsoft.Extensions.Identity.Stores.dll
 C:\Users\gianluca.antolini\Desktop\cart_checkout\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
+c:\Users\gianluca.antolini\Desktop\cart_checkout\bin\Debug\net8.0\PayPalCheckoutSdk.dll
+c:\Users\gianluca.antolini\Desktop\cart_checkout\bin\Debug\net8.0\PayPalHttp-Dotnet.dll

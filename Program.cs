@@ -71,6 +71,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
+builder.Services.AddTransient<PayPalService>();
 
 
 

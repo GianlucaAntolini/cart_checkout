@@ -71,6 +71,10 @@
               "target": "Package",
               "version": "[8.0.6, )"
             },
+            "PayPalCheckoutSdk": {
+              "target": "Package",
+              "version": "[1.0.4, )"
+            },
             "PuppeteerSharp": {
               "target": "Package",
               "version": "[18.0.1, )"
