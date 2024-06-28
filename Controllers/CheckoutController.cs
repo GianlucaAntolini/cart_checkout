@@ -327,6 +327,10 @@ namespace YourNamespace.Controllers
                 HttpContext.Session.Remove("OrderId");
                 // Remove the order payment id from session
                 HttpContext.Session.Remove("OrderPaymentId");
+                // Remove the stripe session id from session
+                HttpContext.Session.Remove("StripeSessionId");
+                // Remove the paypal order id from session
+                HttpContext.Session.Remove("PayPalOrderId");
                 // Set the order id in viewbag
                 ViewBag.Order = order;
                 return View();

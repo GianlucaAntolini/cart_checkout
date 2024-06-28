@@ -3,7 +3,6 @@
 @{
   ViewBag.Title = "I miei ordini";
   var orders = ViewBag.Orders as List<Order>;
-  var newsletter = ViewBag.Newsletter as bool? ?? false;
   var paymentTypes = ViewBag.PaymentTypes as List<PaymentType> ?? new List<PaymentType>();
 }
 
@@ -22,14 +21,14 @@
           @order.OrderUserDetail.Name @order.OrderUserDetail.Surname<br />
           @order.OrderUserDetail.Email<br />
           @order.OrderUserDetail.Nation.Name<br /><br />
-          @if (newsletter)
-          {
-            <span>Iscritto alla newsletter!</span>
 
-            <br />
-          }
+          <span>Metodo di pagamento: @order.OrderPayment.PaymentType.Name</span>
+          <br />
+
+
           @if (order.OrderInvoice != null)
           {
+            <br />
             <span>Richiedo fattura</span>
 
             <br />
@@ -44,6 +43,8 @@
 
 
           }
+
+
         </div>
       </section>
 

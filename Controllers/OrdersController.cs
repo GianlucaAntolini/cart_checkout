@@ -88,12 +88,7 @@ namespace YourNamespace.Controllers
                         {
                             orders.Add(order);
 
-                            // get the newsletter subscription  by the email of the order user detail if there is one
-                            var newsletterSubscriptionResult = await _newsletterSubscriptionRepository.GetByEmail(order.OrderUserDetail.Email);
-                            if (newsletterSubscriptionResult.Value is NewsletterSubscription newsletterSubscription)
-                            {
-                                ViewBag.NewsletterSubscription = newsletterSubscription;
-                            }
+
                         }
                     }
                 }
